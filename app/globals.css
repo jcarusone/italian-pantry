@@ -1,26 +1,173 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 @theme inline {
-  --color-background: var(--background);
+  --font-sans: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  /* Single-family stack — display utilities use the same face at heavier weights. */
+  --font-serif: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 3);
+  --radius-4xl: calc(var(--radius) * 4);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  color-scheme: light;
+
+  /* Bright off-white canvas + near-black ink */
+  --background: oklch(0.981 0.0055 95);
+  --foreground: oklch(0.175 0.008 80);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.175 0.008 80);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.175 0.008 80);
+
+  /* Deep olive green */
+  --primary: oklch(0.362 0.062 130);
+  --primary-foreground: oklch(0.985 0.008 95);
+
+  /* Cool-neutral greys, kept low-chroma so the yellow stays the only shout */
+  --secondary: oklch(0.938 0.0045 95);
+  --secondary-foreground: oklch(0.255 0.008 80);
+  --muted: oklch(0.945 0.004 95);
+  --muted-foreground: oklch(0.505 0.0075 85);
+
+  /* Bright citrus yellow — near-black text on it for contrast */
+  --accent: oklch(0.878 0.172 99);
+  --accent-foreground: oklch(0.175 0.008 80);
+
+  --destructive: oklch(0.505 0.175 26);
+
+  --border: oklch(0.885 0.005 95);
+  --input: oklch(0.885 0.005 95);
+  --ring: oklch(0.362 0.062 130);
+
+  /* Hard edges everywhere — this design is built on square corners. */
+  --radius: 0rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/40;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1;
+  }
+
+  ::selection {
+    background-color: oklch(0.878 0.172 99);
+    color: oklch(0.175 0.008 80);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility font-display {
+  font-family: var(--font-sans);
+  /* Heavy + tight: this design leans on blocky, confident headline type. */
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+/* Giant edge-to-edge wordmark treatment (hero lockup). Optical sizing means
+   the very largest type needs even tighter tracking than font-display. */
+@utility wordmark {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.82;
+  text-transform: uppercase;
+}
+
+/* Small uppercase eyebrow/label treatment used throughout the site */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* Rich text coming out of Shopify (product + article bodies) */
+@utility prose-pantry {
+  & p {
+    @apply text-[0.9375rem] leading-relaxed text-muted-foreground;
+  }
+
+  & p + p {
+    @apply mt-4;
+  }
+
+  & h2 {
+    font-family: var(--font-sans);
+    @apply mt-10 mb-3 text-2xl leading-tight font-bold tracking-[-0.03em] text-foreground;
+  }
+
+  & h3 {
+    @apply mt-8 mb-2 text-base font-semibold text-foreground;
+  }
+
+  & strong {
+    @apply font-semibold text-foreground;
+  }
+
+  & em {
+    @apply italic;
+  }
+
+  & a {
+    @apply text-primary underline underline-offset-4;
+  }
+
+  & ul {
+    @apply mt-4 flex flex-col gap-2 pl-0;
+  }
+
+  & ul li {
+    @apply relative pl-5 text-[0.9375rem] leading-relaxed text-muted-foreground;
+  }
+
+  & ul li::before {
+    content: "";
+    @apply absolute top-[0.62em] left-0 size-1.5 bg-primary;
+  }
+
+  & ol {
+    @apply mt-4 flex list-decimal flex-col gap-3 pl-5;
+  }
+
+  & ol li {
+    @apply text-[0.9375rem] leading-relaxed text-muted-foreground;
+  }
+
+  & ol li::marker {
+    @apply font-semibold text-primary;
+  }
 }
