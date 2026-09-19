@@ -28,14 +28,14 @@ export function ProductGallery({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative object-contain h-[80vh] w-full overflow-hidden rounded-sm bg-secondary">
+      <div className="relative object-contain h-[75vh] w-full overflow-hidden rounded-sm bg-secondary">
         <Image
           src={current.url || "/placeholder.svg"}
           alt={current.altText || title}
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 50vw"
-          className="object-contain"
+          className="object-contain py-4"
         />
       </div>
 

@@ -6,7 +6,7 @@ import { ArticleCard } from "@/components/journal/article-card"
 import { formatDate } from "@/lib/format"
 
 export const metadata: Metadata = {
-  title: "The Journal",
+  title: "Stories",
   description:
     "Notes from the groves and the mill: how olive oil is made, how to taste it, and how to read a label without being fooled.",
 }
@@ -18,9 +18,9 @@ export default async function JournalPage() {
   return (
     <div className="pb-20 sm:pb-28">
       <header className="border-b border-border bg-card">
-        <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
+        <div className="site-container py-14 sm:py-20">
           <p className="eyebrow text-muted-foreground">
-            The Journal
+            Stories
           </p>
           <h1 className="mt-4 font-display text-4xl leading-[0.95] uppercase text-balance sm:text-5xl md:text-6xl">
             Notes from the groves
@@ -37,7 +37,7 @@ export default async function JournalPage() {
           No articles published yet. Please check back soon.
         </p>
       ) : (
-        <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <div className="site-container">
           {/* Lead article */}
           <Link
             href={`/journal/${lead.handle}`}

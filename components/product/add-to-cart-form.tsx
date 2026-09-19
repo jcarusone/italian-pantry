@@ -139,11 +139,11 @@ export function AddToCartForm({ product }: { product: Product }) {
           ) : justAdded ? (
             <>
               <Check className="size-4" aria-hidden="true" />
-              Added to bag
+              Added to cart
             </>
           ) : canPurchase ? (
             <>
-              Add to bag
+              Add to cart
               <span className="ml-1.5 tabular-nums opacity-80 before:mr-1.5 before:opacity-50 before:content-['·']">
                 {formatPrice(selected?.price)}
               </span>

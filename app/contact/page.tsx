@@ -53,7 +53,7 @@ export default function ContactPage() {
   return (
     <div className="pb-20 sm:pb-28">
       <header className="border-b border-border bg-card">
-        <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8 sm:py-20">
+        <div className="site-container py-14 sm:py-20">
           <p className="eyebrow text-muted-foreground">
             Contact
           </p>
@@ -67,7 +67,7 @@ export default function ContactPage() {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[1fr_20rem] lg:gap-16">
+      <div className="site-container grid grid-cols-1 gap-12 py-14 sm:py-20 lg:grid-cols-[1fr_20rem] lg:gap-16">
         <div>
           <ContactForm />
         </div>
@@ -95,7 +95,8 @@ export default function ContactPage() {
         </aside>
       </div>
 
-      <section className="mx-auto max-w-3xl border-t border-border px-5 py-14 sm:px-8 sm:py-20">
+      <section className="site-container border-t border-border py-14 sm:py-20">
+        <div className="mx-auto max-w-3xl">
         <h2 className="font-display text-3xl leading-[1.0] uppercase text-balance sm:text-4xl">
           Frequently asked
         </h2>
@@ -111,6 +112,7 @@ export default function ContactPage() {
             </AccordionItem>
           ))}
         </Accordion>
+        </div>
       </section>
     </div>
   )

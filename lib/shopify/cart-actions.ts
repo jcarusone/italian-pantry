@@ -85,7 +85,7 @@ export async function updateCartLine(lineId: string, quantity: number): Promise<
     revalidatePath("/cart")
     return { ok: true, cart }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not update your bag."
+    const message = error instanceof Error ? error.message : "Could not update your cart."
     console.log("[v0] updateCartLine failed:", message)
     return { ok: false, error: message }
   }

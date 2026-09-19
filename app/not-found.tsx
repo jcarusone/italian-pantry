@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button"
 
 export default function NotFound() {
   return (
-    <div className="mx-auto flex max-w-lg flex-col items-center px-5 py-28 text-center sm:px-8 sm:py-36">
+    <div className="site-container flex flex-col items-center py-28 text-center sm:py-36">
+      <div className="max-w-lg">
       <p className="eyebrow text-muted-foreground">
         404
       </p>
@@ -15,7 +16,7 @@ export default function NotFound() {
         stocked.
       </p>
       <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-        <Button size="lg" render={<Link href="/shop" />} className="px-7">
+        <Button size="lg" render={<Link href="/products" />} className="px-7">
           Browse the cellar
         </Button>
         <Button
@@ -26,6 +27,7 @@ export default function NotFound() {
         >
           Back home
         </Button>
+      </div>
       </div>
     </div>
   )

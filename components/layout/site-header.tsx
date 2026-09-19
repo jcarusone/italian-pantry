@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, ShoppingBag, X } from "lucide-react";
 
@@ -10,53 +10,33 @@ import { Logo } from "@/components/layout/logo";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
-  { href: "/shop", label: "Shop" },
-  { href: "/shop?collection=olive-oil", label: "Olive Oil" },
-  { href: "/shop?collection=pantry", label: "Pantry" },
-  { href: "/journal", label: "Journal" },
+  { href: "/products", label: "Products" },
+  { href: "/journal", label: "Stories" },
   { href: "/about", label: "About" },
 ];
 
-/**
- * Nav hrefs can carry a `?collection=` filter, but `usePathname()` strips the
- * query — so a naive pathname compare marks plain "Shop" active on every
- * collection view and never highlights the collection link itself. Compare the
- * path and the collection param together.
- */
-function isLinkActive(
-  href: string,
-  pathname: string,
-  activeCollection: string | null,
-) {
-  const [hrefPath, hrefQuery] = href.split("?");
-  const hrefCollection = new URLSearchParams(hrefQuery ?? "").get("collection");
-
-  if (hrefPath !== pathname) {
-    return hrefPath !== "/" && pathname.startsWith(`${hrefPath}/`);
-  }
-
-  return hrefCollection === activeCollection;
+function isLinkActive(href: string, pathname: string) {
+  if (href === pathname) return true;
+  return href !== "/" && pathname.startsWith(`${href}/`);
 }
 
 export function SiteHeader() {
   const pathname = usePathname();
-  const activeCollection = useSearchParams().get("collection");
   const { totalQuantity, openCart } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Collection links share the /shop pathname, so also close on filter changes.
   useEffect(() => {
     setMobileOpen(false);
-  }, [pathname, activeCollection]);
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-40 bg-background">
-      <p className="flex items-center justify-center bg-lime-700 px-4 py-1.5 text-center text-[0.685rem] font-extrabold tracking-[0.18em] text-background uppercase">
+      <p className="flex items-center justify-center bg-lime-700 px-4 py-1.5 text-center text-[0.685rem] font-bold tracking-[0.1em] text-background uppercase">
         Free shipping in the GTA on all orders over $75
       </p>
 
       <div className="border-b border-foreground">
-        <div className="mx-auto flex h-16 w-full max-w-[100rem] items-center gap-4 px-4 sm:px-6 lg:px-10">
+        <div className="site-container flex h-16 items-center gap-4">
           <button
             type="button"
             onClick={() => setMobileOpen((open) => !open)}
@@ -80,11 +60,7 @@ export function SiteHeader() {
             className="hidden items-center gap-7 lg:flex"
           >
             {NAV_LINKS.map((link) => {
-              const isActive = isLinkActive(
-                link.href,
-                pathname,
-                activeCollection,
-              );
+              const isActive = isLinkActive(link.href, pathname);
 
               return (
                 <Link
@@ -108,7 +84,7 @@ export function SiteHeader() {
               href="/contact"
               className="hidden h-9 items-center bg-foreground px-4 text-[0.6875rem] font-semibold tracking-[0.14em] text-background uppercase transition-colors hover:bg-primary sm:flex"
             >
-              Wholesale
+              Contact us
             </Link>
 
             <button
@@ -119,7 +95,7 @@ export function SiteHeader() {
               <ShoppingBag className="size-4" aria-hidden="true" />
               <span className="tabular-nums">{totalQuantity}</span>
               <span className="sr-only">
-                Open bag{totalQuantity > 0 ? `, ${totalQuantity} items` : ""}
+                Open cart{totalQuantity > 0 ? `, ${totalQuantity} items` : ""}
               </span>
             </button>
           </div>
@@ -131,7 +107,7 @@ export function SiteHeader() {
           aria-label="Mobile navigation"
           className="border-b border-foreground bg-background lg:hidden"
         >
-          <ul className="mx-auto flex w-full max-w-[100rem] flex-col px-4 sm:px-6">
+          <ul className="site-container flex flex-col">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link

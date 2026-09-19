@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { CartProvider } from "@/components/cart/cart-provider";
+import { FooterReveal } from "@/components/layout/footer-reveal";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Toaster } from "@/components/ui/sonner";
@@ -68,11 +69,14 @@ export default async function RootLayout({
     <html lang="en" className={`${inter.variable} bg-background`}>
       <body className="min-h-dvh bg-background antialiased">
         <CartProvider initialCart={cart}>
-          <div className="flex min-h-dvh flex-col">
+          <FooterReveal
+            footer={
+              <SiteFooter className="fixed inset-x-0 bottom-0 z-0 h-dvh" />
+            }
+          >
             <SiteHeader />
             <main className="flex-1">{children}</main>
-            <SiteFooter />
-          </div>
+          </FooterReveal>
           <CartDrawer />
         </CartProvider>
         <Toaster position="bottom-right" />

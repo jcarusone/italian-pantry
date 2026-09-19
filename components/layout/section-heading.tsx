@@ -13,7 +13,7 @@ export function SectionHeading({
   action?: { href: string; label: string }
 }) {
   return (
-    <div className="border-t-2 border-foreground pt-5">
+    <div>
       <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex max-w-2xl flex-col gap-3">
           {eyebrow ? (

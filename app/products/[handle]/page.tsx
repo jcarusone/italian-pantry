@@ -1,20 +1,39 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { getProduct, getProductRecommendations } from "@/lib/shopify"
-import { ProductGallery } from "@/components/product/product-gallery"
+
+import {
+  parseSortValue,
+  ProductsListing,
+} from "@/components/product/products-listing"
 import { AddToCartForm } from "@/components/product/add-to-cart-form"
-import { ProductPrice } from "@/components/product/product-price"
 import { ProductCard } from "@/components/product/product-card"
+import { ProductGallery } from "@/components/product/product-gallery"
+import { ProductPrice } from "@/components/product/product-price"
 import { SectionHeading } from "@/components/layout/section-heading"
 import { Badge } from "@/components/ui/badge"
+import {
+  getCollections,
+  getProduct,
+  getProductRecommendations,
+} from "@/lib/shopify"
 
 export async function generateMetadata(props: {
   params: Promise<{ handle: string }>
 }): Promise<Metadata> {
   const { handle } = await props.params
+  const collections = await getCollections()
+  const collection = collections.find((item) => item.handle === handle)
+
+  if (collection) {
+    return {
+      title: collection.title,
+      description: collection.description || undefined,
+    }
+  }
+
   const product = await getProduct(handle)
-  if (!product) return { title: "Product not found" }
+  if (!product) return { title: "Not found" }
 
   return {
     title: product.seo?.title || product.title,
@@ -25,20 +44,37 @@ export async function generateMetadata(props: {
   }
 }
 
-export default async function ProductPage(props: { params: Promise<{ handle: string }> }) {
+export default async function ProductOrCollectionPage(props: {
+  params: Promise<{ handle: string }>
+  searchParams: Promise<{ sort?: string }>
+}) {
   const { handle } = await props.params
-  const product = await getProduct(handle)
+  const searchParams = await props.searchParams
+  const collections = await getCollections()
+  const collection = collections.find((item) => item.handle === handle)
 
+  if (collection) {
+    return (
+      <ProductsListing
+        activeCollection={handle}
+        activeSort={parseSortValue(searchParams.sort)}
+        collections={collections}
+      />
+    )
+  }
+
+  const product = await getProduct(handle)
   if (!product) notFound()
 
   const recommendations = (await getProductRecommendations(product.id)).slice(0, 3)
 
   const hasRange =
-    product.priceRange.minVariantPrice.amount !== product.priceRange.maxVariantPrice.amount
+    product.priceRange.minVariantPrice.amount !==
+    product.priceRange.maxVariantPrice.amount
 
   return (
     <div className="pb-20 sm:pb-28">
-      <nav aria-label="Breadcrumb" className="mx-auto max-w-6xl px-5 pt-8 sm:px-8">
+      <nav aria-label="Breadcrumb" className="site-container pt-8">
         <ol className="flex flex-wrap items-center gap-2 eyebrow text-muted-foreground">
           <li>
             <Link href="/" className="transition-colors hover:text-foreground">
@@ -47,8 +83,8 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
           </li>
           <li aria-hidden="true">/</li>
           <li>
-            <Link href="/shop" className="transition-colors hover:text-foreground">
-              Shop
+            <Link href="/products" className="transition-colors hover:text-foreground">
+              Products
             </Link>
           </li>
           <li aria-hidden="true">/</li>
@@ -56,14 +92,12 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
         </ol>
       </nav>
 
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-5 py-10 sm:px-8 lg:grid-cols-2 lg:gap-16 lg:py-14">
+      <div className="site-container grid grid-cols-1 gap-10 py-10 lg:grid-cols-2 lg:gap-16 lg:py-14">
         <ProductGallery images={product.images} title={product.title} />
 
         <div className="flex flex-col">
           {product.productType && (
-            <p className="eyebrow text-primary">
-              {product.productType}
-            </p>
+            <p className="eyebrow text-primary">{product.productType}</p>
           )}
 
           <h1 className="mt-4 font-display text-3xl leading-[1.0] uppercase text-balance sm:text-4xl md:text-[2.75rem]">
@@ -99,9 +133,9 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
       </div>
 
       {recommendations.length > 0 && (
-        <section className="mx-auto max-w-6xl border-t border-border px-5 pt-14 sm:px-8 sm:pt-20">
+        <section className="site-container border-t border-border pt-14 sm:pt-20">
           <SectionHeading eyebrow="You may also like" title="From the same cellar" />
-          <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid grid-cols-2 gap-4 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {recommendations.map((item) => (
               <ProductCard key={item.id} product={item} />
             ))}

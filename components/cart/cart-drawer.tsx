@@ -1,20 +1,21 @@
 "use client"
 
 import Link from "next/link"
-import { ShoppingBag } from "lucide-react"
+import { ShoppingBag, X } from "lucide-react"
 
 import { CartLineItem } from "@/components/cart/cart-line-item"
 import { useCart } from "@/components/cart/cart-provider"
 import { CheckoutButton } from "@/components/cart/checkout-button"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer"
+import { Separator } from "@/components/ui/separator"
 import { formatPrice } from "@/lib/format"
 
 export function CartDrawer() {
@@ -23,19 +24,28 @@ export function CartDrawer() {
   const isEmpty = lines.length === 0
 
   return (
-    <Sheet open={isOpen} onOpenChange={setOpen}>
-      <SheetContent
-        side="right"
-        className="w-full gap-0 border-border bg-background p-0 sm:max-w-md"
-      >
-        <SheetHeader className="border-b border-border px-5 py-4">
-          <SheetTitle className="font-display text-xl">Your bag</SheetTitle>
-          <SheetDescription className="text-xs">
+    <Drawer open={isOpen} onOpenChange={setOpen} swipeDirection="right">
+      <DrawerContent className="h-full max-h-none gap-0 border-border bg-background p-0 sm:max-w-md">
+        <DrawerHeader className="relative border-b border-border px-5 py-4">
+          <DrawerTitle className="font-display text-xl">Your cart</DrawerTitle>
+          <DrawerDescription className="text-xs">
             {isEmpty
               ? "Nothing here yet."
               : `${cart?.totalQuantity} ${cart?.totalQuantity === 1 ? "item" : "items"}`}
-          </SheetDescription>
-        </SheetHeader>
+          </DrawerDescription>
+          <DrawerClose
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="absolute top-3 right-3"
+              />
+            }
+          >
+            <X className="size-4" aria-hidden="true" />
+            <span className="sr-only">Close</span>
+          </DrawerClose>
+        </DrawerHeader>
 
         {isEmpty ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 text-center">
@@ -43,7 +53,7 @@ export function CartDrawer() {
               <ShoppingBag className="size-5 text-muted-foreground" aria-hidden="true" />
             </div>
             <div className="flex flex-col gap-1.5">
-              <p className="font-display text-lg">Your bag is empty</p>
+              <p className="font-display text-lg">Your cart is empty</p>
               <p className="text-sm text-muted-foreground">
                 Start with the oil everyone comes back for.
               </p>
@@ -52,7 +62,7 @@ export function CartDrawer() {
               variant="outline"
               className="rounded-sm bg-transparent"
               onClick={closeCart}
-              render={<Link href="/shop" />}
+              render={<Link href="/products" />}
             >
               Browse the shop
             </Button>
@@ -101,13 +111,13 @@ export function CartDrawer() {
                   onClick={closeCart}
                   render={<Link href="/cart" />}
                 >
-                  View full bag
+                  View full cart
                 </Button>
               </div>
             </div>
           </>
         )}
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   )
 }

@@ -78,7 +78,7 @@ export function CartLineItem({
             alt={image.altText ?? line.merchandise.product.title}
             fill
             sizes="120px"
-            className="object-cover"
+            className="object-contain p-1.5"
           />
         ) : null}
       </Link>

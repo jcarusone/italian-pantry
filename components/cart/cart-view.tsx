@@ -36,12 +36,12 @@ export function CartView() {
     return (
       <div className="flex flex-col items-center justify-center border-2 border-foreground bg-card px-6 py-24 text-center">
         <ShoppingBag className="size-7 text-primary" aria-hidden="true" />
-        <h2 className="mt-6 font-display text-3xl uppercase">Your basket is empty</h2>
+        <h2 className="mt-6 font-display text-3xl uppercase">Your cart is empty</h2>
         <p className="mt-3 max-w-sm leading-relaxed text-muted-foreground">
           Start with the Three Regions Tasting Set if you are not sure where to begin.
         </p>
         <Button
-          render={<Link href="/shop" />}
+          render={<Link href="/products" />}
           className="mt-8 h-12 px-7 text-[0.6875rem] font-bold tracking-[0.14em] uppercase"
         >
           Browse the cellar
@@ -99,7 +99,7 @@ export function CartView() {
         </div>
 
         <Link
-          href="/shop"
+          href="/products"
           className="mt-4 block text-center text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
         >
           Continue shopping

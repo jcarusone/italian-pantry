@@ -73,19 +73,6 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Oversized wordmark lockup */}
-      <section className="border-b-2 border-foreground">
-        <h1 className="sr-only">
-          Italian Pantry — single-estate Italian olive oil and pantry goods
-        </h1>
-        <p
-          aria-hidden="true"
-          className="wordmark w-full px-2 py-4 tracking-wide text-center text-[clamp(2.5rem,10.2vw,11rem)] text-foreground"
-        >
-          Italian Pantry
-        </p>
-      </section>
-
       {/* Hero image band */}
       <section className="relative isolate border-b-2 border-foreground">
         <div className="absolute inset-0 -z-10">
@@ -97,20 +84,20 @@ export default async function HomePage() {
             sizes="100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/10" />
         </div>
 
-        <div className="mx-auto w-full max-w-[100rem] px-4 py-20 sm:px-6 md:py-28 lg:px-10 lg:py-32">
+        <div className="site-container py-20 md:py-28 lg:py-48">
           <div className="flex max-w-2xl flex-col items-start gap-7">
             <span className="bg-accent px-3 py-2 text-[0.625rem] font-bold tracking-[0.18em] text-accent-foreground uppercase">
-              2025 harvest now shipping
+              ITALIAN PANTRY
             </span>
 
-            <h2 className="font-display text-5xl leading-[0.9] text-balance uppercase sm:text-6xl lg:text-7xl">
+            <h2 className="font-display text-5xl leading-[0.9] text-balance uppercase sm:text-6xl lg:text-7xl text-white/90">
               Oil that tastes like the tree
             </h2>
 
-            <p className="max-w-lg text-base leading-relaxed text-foreground/70">
+            <p className="max-w-lg text-base leading-relaxed text-white/90">
               Most supermarket oil is a blend of four countries, bottled a year
               ago, sitting under a spotlight. Ours comes from named estates in
               Tuscany, Puglia, Umbria and Sicily, pressed within hours of
@@ -121,7 +108,7 @@ export default async function HomePage() {
               <Button
                 size="lg"
                 className="group h-12 px-7 text-[0.6875rem] font-bold tracking-[0.14em] uppercase"
-                render={<Link href="/shop" />}
+                render={<Link href="/products" />}
               >
                 Shop the collection
                 <ArrowRight
@@ -165,7 +152,7 @@ export default async function HomePage() {
 
       {/* Promises */}
       <section className="border-b-2 border-foreground">
-        <div className="mx-auto grid w-full max-w-[100rem] grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="site-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {PROMISES.map((promise) => (
             <div
               key={promise.title}
@@ -187,15 +174,15 @@ export default async function HomePage() {
       </section>
 
       {/* Best sellers */}
-      <section className="mx-auto w-full max-w-[100rem] px-4 py-16 sm:px-6 lg:px-10 lg:py-24">
+      <section className="site-container py-16 lg:py-24">
         <SectionHeading
           eyebrow="The favourites"
           title="What people reorder"
           description="Four bottles that account for most of what leaves the Brooklyn shelf each week."
-          action={{ href: "/shop", label: "View all" }}
+          action={{ href: "/products", label: "View all" }}
         />
 
-        <div className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
           {featured.map((product, index) => (
             <ProductCard
               key={product.id}
@@ -209,7 +196,7 @@ export default async function HomePage() {
       {/* Editorial feature */}
       {hero ? (
         <section className="border-y-2 border-foreground bg-primary text-primary-foreground">
-          <div className="mx-auto grid w-full max-w-[100rem] grid-cols-1 items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-20 lg:px-10 lg:py-24">
+          <div className="site-container grid grid-cols-1 items-center gap-12 py-16 lg:grid-cols-2 lg:gap-20 lg:py-24">
             <div className="relative aspect-square overflow-hidden border-2 border-primary-foreground/20">
               <Image
                 src="/editorial/pour.png"
@@ -271,18 +258,18 @@ export default async function HomePage() {
       ) : null}
 
       {/* Olive oil grid */}
-      <section className="mx-auto w-full max-w-[100rem] px-4 py-16 sm:px-6 lg:px-10 lg:py-24">
+      <section className="site-container py-16 lg:py-24">
         <SectionHeading
           eyebrow="By region"
           title="The olive oil shelf"
           description="Six oils, four regions, one country. Start with the tasting set if you cannot choose."
           action={{
-            href: "/shop?collection=olive-oil",
+            href: "/products/olive-oil",
             label: "Shop olive oil",
           }}
         />
 
-        <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 lg:gap-6">
+        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
           {oliveOils.products
             .filter((product) => product.id !== hero?.id)
             .slice(0, 6)
@@ -295,12 +282,12 @@ export default async function HomePage() {
       {/* Journal */}
       {articles.length > 0 ? (
         <section className="border-t-2 border-foreground bg-secondary">
-          <div className="mx-auto w-full max-w-[100rem] px-4 py-16 sm:px-6 lg:px-10 lg:py-24">
+          <div className="site-container py-16 lg:py-24">
             <SectionHeading
-              eyebrow="The Journal"
+              eyebrow="Stories"
               title="Learn what you taste"
               description="Short, practical writing on harvest, tasting, and how to read a label without being fooled."
-              action={{ href: "/journal", label: "Read the journal" }}
+              action={{ href: "/journal", label: "All stories" }}
             />
 
             <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6">

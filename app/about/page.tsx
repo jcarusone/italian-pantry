@@ -57,7 +57,7 @@ export default function AboutPage() {
     <div className="pb-20 sm:pb-28">
       {/* Intro */}
       <header className="border-b-2 border-foreground bg-card">
-        <div className="mx-auto grid w-full max-w-[100rem] grid-cols-1 gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10">
+        <div className="site-container grid grid-cols-1 gap-10 py-14 sm:py-20 lg:grid-cols-2 lg:items-center lg:gap-16">
           <div>
             <p className="eyebrow text-muted-foreground">
               Our story
@@ -91,7 +91,7 @@ export default function AboutPage() {
       </header>
 
       {/* Principles */}
-      <section className="mx-auto w-full max-w-[100rem] px-4 py-16 sm:px-6 sm:py-24 lg:px-10">
+      <section className="site-container py-16 sm:py-24">
         <SectionHeading
           eyebrow="How we work"
           title="Four rules we do not bend"
@@ -115,7 +115,7 @@ export default function AboutPage() {
 
       {/* Regions */}
       <section className="border-y-2 border-foreground bg-secondary">
-        <div className="mx-auto grid w-full max-w-[100rem] grid-cols-1 gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10">
+        <div className="site-container grid grid-cols-1 gap-10 py-16 sm:py-24 lg:grid-cols-2 lg:items-center lg:gap-16">
           <div className="relative aspect-4/3 overflow-hidden border-2 border-foreground bg-secondary">
             <Image
               src="/editorial/hero-grove.png"
@@ -146,7 +146,8 @@ export default function AboutPage() {
       </section>
 
       {/* Closing */}
-      <section className="mx-auto max-w-3xl px-5 py-16 text-center sm:px-8 sm:py-24">
+      <section className="site-container py-16 sm:py-24">
+        <div className="mx-auto max-w-3xl text-center">
         <h2 className="font-display text-3xl leading-[1.0] uppercase text-balance sm:text-4xl">
           Taste one of ours beside whatever is in your cupboard
         </h2>
@@ -170,6 +171,7 @@ export default function AboutPage() {
           >
             Talk to us
           </Button>
+        </div>
         </div>
       </section>
     </div>
