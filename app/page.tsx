@@ -77,7 +77,7 @@ export default async function HomePage() {
       <section className="relative isolate border-b-2 border-foreground">
         <div className="absolute inset-0 -z-10">
           <Image
-            src="/editorial/hero-grove.png"
+            src="/olive-tree-2.webp"
             alt="An ancient terraced olive grove in Tuscany at golden hour"
             fill
             priority
