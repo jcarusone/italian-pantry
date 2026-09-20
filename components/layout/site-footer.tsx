@@ -89,7 +89,7 @@ export async function SiteFooter({ className }: { className?: string }) {
       )}
     >
       <Image
-        src="/olive-tree-1.webp"
+        src="/product-line/img-15.webp"
         alt=""
         fill
         sizes="100vw"

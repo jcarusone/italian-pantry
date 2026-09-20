@@ -77,22 +77,18 @@ export default async function HomePage() {
       <section className="relative isolate border-b-2 border-foreground">
         <div className="absolute inset-0 -z-10">
           <Image
-            src="/olive-tree-2.webp"
+            src="/product-line/img-22.webp"
             alt="An ancient terraced olive grove in Tuscany at golden hour"
             fill
             priority
             sizes="100vw"
-            className="object-cover"
+            className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/10" />
         </div>
 
         <div className="site-container py-20 md:py-28 lg:py-48">
           <div className="flex max-w-2xl flex-col items-start gap-7">
-            <span className="bg-accent px-3 py-2 text-[0.625rem] font-bold tracking-[0.18em] text-accent-foreground uppercase">
-              ITALIAN PANTRY
-            </span>
-
             <h2 className="font-display text-5xl leading-[0.9] text-balance uppercase sm:text-6xl lg:text-7xl text-white/90">
               Oil that tastes like the tree
             </h2>
@@ -104,7 +100,7 @@ export default async function HomePage() {
               harvest, and dated so you can prove it.
             </p>
 
-            <div className="mt-2 flex flex-wrap items-center gap-3">
+            <div className="mt-2">
               <Button
                 size="lg"
                 className="group h-12 px-7 text-[0.6875rem] font-bold tracking-[0.14em] uppercase"
@@ -115,14 +111,6 @@ export default async function HomePage() {
                   className="size-4 transition-transform group-hover:translate-x-0.5"
                   aria-hidden="true"
                 />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-12 border-2 border-foreground bg-transparent px-7 text-[0.6875rem] font-bold tracking-[0.14em] uppercase hover:bg-accent hover:text-accent-foreground"
-                render={<Link href="/journal/how-to-taste-olive-oil" />}
-              >
-                Learn to taste it
               </Button>
             </div>
           </div>
