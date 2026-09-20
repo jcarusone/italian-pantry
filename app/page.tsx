@@ -182,7 +182,7 @@ export default async function HomePage() {
           action={{ href: "/products", label: "View all" }}
         />
 
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
+        <div className="mt-10 grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4 xl:grid-cols-5">
           {featured.map((product, index) => (
             <ProductCard
               key={product.id}
@@ -197,7 +197,7 @@ export default async function HomePage() {
       {hero ? (
         <section className="border-y-2 border-foreground bg-primary text-primary-foreground">
           <div className="site-container grid grid-cols-1 items-center gap-12 py-16 lg:grid-cols-2 lg:gap-20 lg:py-24">
-            <div className="relative aspect-square overflow-hidden border-2 border-primary-foreground/20">
+            <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-primary-foreground/20">
               <Image
                 src="/editorial/pour.png"
                 alt="Green-gold olive oil being poured into a small ceramic dish"
@@ -269,7 +269,7 @@ export default async function HomePage() {
           }}
         />
 
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 lg:gap-6">
+        <div className="mt-10 grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4 xl:grid-cols-5">
           {oliveOils.products
             .filter((product) => product.id !== hero?.id)
             .slice(0, 6)

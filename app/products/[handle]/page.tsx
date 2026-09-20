@@ -135,7 +135,7 @@ export default async function ProductOrCollectionPage(props: {
       {recommendations.length > 0 && (
         <section className="site-container border-t border-border pt-14 sm:pt-20">
           <SectionHeading eyebrow="You may also like" title="From the same cellar" />
-          <div className="mt-10 grid grid-cols-2 gap-4 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="mt-10 grid grid-cols-1 gap-5 gap-y-12 min-[480px]:grid-cols-2 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4 xl:grid-cols-5">
             {recommendations.map((item) => (
               <ProductCard key={item.id} product={item} />
             ))}

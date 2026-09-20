@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import { useSearchParams } from "next/navigation"
-import { useActionState } from "react"
-import { useFormStatus } from "react-dom"
-import { Check, Loader2 } from "lucide-react"
+import { useSearchParams } from "next/navigation";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
+import { Check, Loader2 } from "lucide-react";
 
-import { submitContactForm, type ContactState } from "@/app/contact/actions"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { cn } from "@/lib/utils"
+import { submitContactForm, type ContactState } from "@/app/contact/actions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
-const INITIAL_STATE: ContactState = { status: "idle", message: "" }
+const INITIAL_STATE: ContactState = { status: "idle", message: "" };
 
 const TOPICS = [
   "General enquiry",
   "Wholesale and restaurants",
   "Order or delivery",
   "Press",
-] as const
+] as const;
 
 /** Lets other pages deep-link a preselected subject, e.g. /contact?topic=wholesale */
 const TOPIC_SLUGS: Record<string, (typeof TOPICS)[number]> = {
@@ -28,10 +28,10 @@ const TOPIC_SLUGS: Record<string, (typeof TOPICS)[number]> = {
   shipping: "Order or delivery",
   order: "Order or delivery",
   press: "Press",
-}
+};
 
 function SubmitButton() {
-  const { pending } = useFormStatus()
+  const { pending } = useFormStatus();
 
   return (
     <Button
@@ -49,27 +49,31 @@ function SubmitButton() {
         "Send message"
       )}
     </Button>
-  )
+  );
 }
 
 export function ContactForm() {
-  const [state, formAction] = useActionState(submitContactForm, INITIAL_STATE)
-  const topicParam = useSearchParams().get("topic")?.toLowerCase() ?? ""
-  const presetTopic = TOPIC_SLUGS[topicParam] ?? TOPICS[0]
+  const [state, formAction] = useActionState(submitContactForm, INITIAL_STATE);
+  const topicParam = useSearchParams().get("topic")?.toLowerCase() ?? "";
+  const presetTopic = TOPIC_SLUGS[topicParam] ?? TOPICS[0];
 
   if (state.status === "success") {
     return (
       <div
         role="status"
-        className="flex flex-col items-start border-2 border-foreground bg-card p-8"
+        className="flex flex-col items-start rounded-lg border-2 border-foreground bg-card p-8"
       >
-        <span className="flex size-9 items-center justify-center bg-accent text-accent-foreground">
+        <span className="flex size-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
           <Check className="size-4" aria-hidden="true" />
         </span>
-        <h2 className="mt-5 font-display text-2xl uppercase">Message received</h2>
-        <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">{state.message}</p>
+        <h2 className="mt-5 font-display text-2xl uppercase">
+          Message received
+        </h2>
+        <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">
+          {state.message}
+        </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -82,8 +86,13 @@ export function ContactForm() {
             name="name"
             autoComplete="name"
             aria-invalid={Boolean(state.fieldErrors?.name)}
-            aria-describedby={state.fieldErrors?.name ? "name-error" : undefined}
-            className={cn("h-11", state.fieldErrors?.name && "border-destructive")}
+            aria-describedby={
+              state.fieldErrors?.name ? "name-error" : undefined
+            }
+            className={cn(
+              "h-11",
+              state.fieldErrors?.name && "border-destructive",
+            )}
           />
           {state.fieldErrors?.name ? (
             <p id="name-error" className="text-sm text-destructive">
@@ -100,8 +109,13 @@ export function ContactForm() {
             type="email"
             autoComplete="email"
             aria-invalid={Boolean(state.fieldErrors?.email)}
-            aria-describedby={state.fieldErrors?.email ? "email-error" : undefined}
-            className={cn("h-11", state.fieldErrors?.email && "border-destructive")}
+            aria-describedby={
+              state.fieldErrors?.email ? "email-error" : undefined
+            }
+            className={cn(
+              "h-11",
+              state.fieldErrors?.email && "border-destructive",
+            )}
           />
           {state.fieldErrors?.email ? (
             <p id="email-error" className="text-sm text-destructive">
@@ -117,7 +131,7 @@ export function ContactForm() {
           id="topic"
           name="topic"
           defaultValue={presetTopic}
-          className="h-11 border-2 border-foreground bg-transparent px-3 text-sm outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/40"
+          className="h-11 rounded-lg border-2 border-foreground bg-transparent px-3 text-sm outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/40"
         >
           {TOPICS.map((topic) => (
             <option key={topic} value={topic}>
@@ -134,8 +148,13 @@ export function ContactForm() {
           name="message"
           rows={6}
           aria-invalid={Boolean(state.fieldErrors?.message)}
-          aria-describedby={state.fieldErrors?.message ? "message-error" : undefined}
-          className={cn("resize-none", state.fieldErrors?.message && "border-destructive")}
+          aria-describedby={
+            state.fieldErrors?.message ? "message-error" : undefined
+          }
+          className={cn(
+            "resize-none",
+            state.fieldErrors?.message && "border-destructive",
+          )}
         />
         {state.fieldErrors?.message ? (
           <p id="message-error" className="text-sm text-destructive">
@@ -154,5 +173,5 @@ export function ContactForm() {
         <SubmitButton />
       </div>
     </form>
-  )
+  );
 }

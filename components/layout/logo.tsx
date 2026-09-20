@@ -1,29 +1,35 @@
-import { cn } from "@/lib/utils"
+import Image from "next/image";
+
+import { cn } from "@/lib/utils";
+
+const LOGO_WIDTH = 1282;
+const LOGO_HEIGHT = 422;
+
+const LOGO_SRC = {
+  header: "/italian-pantry-logo.webp",
+  footer: "/italian-pantry-logo-white-with-flag.webp",
+} as const;
 
 export function Logo({
   className,
-  tone = "default",
+  variant = "header",
+  priority = false,
+  opacity = 100,
 }: {
-  className?: string
-  tone?: "default" | "inverted"
+  className?: string;
+  variant?: keyof typeof LOGO_SRC;
+  priority?: boolean;
+  opacity?: number;
 }) {
   return (
-    <span className={cn("flex items-center gap-2", className)}>
-      <span
-        className={cn(
-          "wordmark text-[1.0625rem] leading-none",
-          tone === "inverted" ? "text-primary-foreground" : "text-foreground",
-        )}
-      >
-        Italian Pantry
-      </span>
-      <span
-        aria-hidden="true"
-        className={cn(
-          "size-1.5",
-          tone === "inverted" ? "bg-accent" : "bg-primary",
-        )}
-      />
-    </span>
-  )
+    <Image
+      src={LOGO_SRC[variant]}
+      alt="Italian Pantry"
+      width={LOGO_WIDTH}
+      height={LOGO_HEIGHT}
+      priority={priority}
+      className={cn("h-9 w-auto shrink-0 sm:h-10", className)}
+      style={{ opacity: opacity / 100 }}
+    />
+  );
 }

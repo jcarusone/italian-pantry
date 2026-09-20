@@ -1,62 +1,62 @@
-import Link from "next/link"
+import Link from "next/link";
 
-import { ProductCard } from "@/components/product/product-card"
-import { getCollections, getProducts } from "@/lib/shopify"
-import type { Collection } from "@/lib/shopify/types"
-import { cn } from "@/lib/utils"
+import { ProductCard } from "@/components/product/product-card";
+import { getCollections, getProducts } from "@/lib/shopify";
+import type { Collection } from "@/lib/shopify/types";
+import { cn } from "@/lib/utils";
 
 const SORT_OPTIONS = [
   { label: "Featured", value: "featured" },
   { label: "Price, low to high", value: "price-asc" },
   { label: "Price, high to low", value: "price-desc" },
   { label: "Newest", value: "newest" },
-] as const
+] as const;
 
-export type SortValue = (typeof SORT_OPTIONS)[number]["value"]
+export type SortValue = (typeof SORT_OPTIONS)[number]["value"];
 
 const SORT_MAP: Record<SortValue, { sortKey: string; reverse: boolean }> = {
   featured: { sortKey: "BEST_SELLING", reverse: false },
   "price-asc": { sortKey: "PRICE", reverse: false },
   "price-desc": { sortKey: "PRICE", reverse: true },
   newest: { sortKey: "CREATED_AT", reverse: true },
-}
+};
 
 export function buildProductsHref(collection: string, sort: SortValue) {
-  const base = collection === "all" ? "/products" : `/products/${collection}`
-  if (sort === "featured") return base
-  return `${base}?sort=${sort}`
+  const base = collection === "all" ? "/products" : `/products/${collection}`;
+  if (sort === "featured") return base;
+  return `${base}?sort=${sort}`;
 }
 
 export function parseSortValue(sort: string | undefined): SortValue {
   return Object.keys(SORT_MAP).includes(sort ?? "")
     ? (sort as SortValue)
-    : "featured"
+    : "featured";
 }
 
 type ProductsListingProps = {
-  activeCollection: string
-  activeSort: SortValue
-  collections?: Collection[]
-}
+  activeCollection: string;
+  activeSort: SortValue;
+  collections?: Collection[];
+};
 
 export async function ProductsListing({
   activeCollection,
   activeSort,
   collections: collectionsProp,
 }: ProductsListingProps) {
-  const { sortKey, reverse } = SORT_MAP[activeSort]
+  const { sortKey, reverse } = SORT_MAP[activeSort];
 
-  const collections = collectionsProp ?? (await getCollections())
+  const collections = collectionsProp ?? (await getCollections());
 
   const products = await getProducts({
     collectionHandle: activeCollection === "all" ? undefined : activeCollection,
     sortKey,
     reverse,
     first: 60,
-  })
+  });
 
-  const tabs = [{ handle: "all", title: "Everything" }, ...collections]
-  const activeTab = tabs.find((tab) => tab.handle === activeCollection)
+  const tabs = [{ handle: "all", title: "Everything" }, ...collections];
+  const activeTab = tabs.find((tab) => tab.handle === activeCollection);
 
   return (
     <div className="pb-20 sm:pb-28">
@@ -82,14 +82,14 @@ export async function ProductsListing({
             className="flex flex-wrap items-center gap-2"
           >
             {tabs.map((tab) => {
-              const isActive = tab.handle === activeCollection
+              const isActive = tab.handle === activeCollection;
               return (
                 <Link
                   key={tab.handle}
                   href={buildProductsHref(tab.handle, activeSort)}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "border px-4 py-2 eyebrow transition-colors",
+                    "rounded-lg border px-4 py-2 eyebrow transition-colors",
                     isActive
                       ? "border-primary bg-primary text-primary-foreground"
                       : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground",
@@ -97,14 +97,14 @@ export async function ProductsListing({
                 >
                   {tab.title}
                 </Link>
-              )
+              );
             })}
           </nav>
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="eyebrow text-muted-foreground">Sort</span>
             {SORT_OPTIONS.map((option) => {
-              const isActive = option.value === activeSort
+              const isActive = option.value === activeSort;
               return (
                 <Link
                   key={option.value}
@@ -119,7 +119,7 @@ export async function ProductsListing({
                 >
                   {option.label}
                 </Link>
-              )
+              );
             })}
           </div>
         </div>
@@ -133,7 +133,7 @@ export async function ProductsListing({
             <p className="pt-8 eyebrow text-muted-foreground">
               {products.length} {products.length === 1 ? "product" : "products"}
             </p>
-            <div className="grid grid-cols-2 gap-4 gap-y-10 pt-8 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <div className="grid grid-cols-1 gap-5 gap-y-12 pt-8 min-[480px]:grid-cols-2 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4 xl:grid-cols-5">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -142,5 +142,5 @@ export async function ProductsListing({
         )}
       </div>
     </div>
-  )
+  );
 }

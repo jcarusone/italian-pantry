@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ShoppingBag } from "lucide-react"
+import Link from "next/link";
+import { ShoppingBag } from "lucide-react";
 
-import { useCart } from "@/components/cart/cart-provider"
-import { CartLineItem } from "@/components/cart/cart-line-item"
-import { CheckoutButton } from "@/components/cart/checkout-button"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { formatPrice } from "@/lib/format"
+import { useCart } from "@/components/cart/cart-provider";
+import { CartLineItem } from "@/components/cart/cart-line-item";
+import { CheckoutButton } from "@/components/cart/checkout-button";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { formatPrice } from "@/lib/format";
 
 export function CartView() {
-  const { cart, isLoading } = useCart()
+  const { cart, isLoading } = useCart();
 
   if (isLoading && !cart) {
     return (
@@ -19,7 +19,7 @@ export function CartView() {
         <div className="flex flex-col gap-8">
           {[0, 1].map((i) => (
             <div key={i} className="flex gap-4">
-              <Skeleton className="size-28 shrink-0 rounded-sm" />
+              <Skeleton className="size-28 shrink-0 rounded-lg" />
               <div className="flex flex-1 flex-col gap-3">
                 <Skeleton className="h-4 w-2/3" />
                 <Skeleton className="h-3 w-1/4" />
@@ -27,18 +27,21 @@ export function CartView() {
             </div>
           ))}
         </div>
-        <Skeleton className="h-64 w-full rounded-sm" />
+        <Skeleton className="h-64 w-full rounded-lg" />
       </div>
-    )
+    );
   }
 
   if (!cart || cart.lines.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center border-2 border-foreground bg-card px-6 py-24 text-center">
+      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-foreground bg-card px-6 py-24 text-center">
         <ShoppingBag className="size-7 text-primary" aria-hidden="true" />
-        <h2 className="mt-6 font-display text-3xl uppercase">Your cart is empty</h2>
+        <h2 className="mt-6 font-display text-3xl uppercase">
+          Your cart is empty
+        </h2>
         <p className="mt-3 max-w-sm leading-relaxed text-muted-foreground">
-          Start with the Three Regions Tasting Set if you are not sure where to begin.
+          Start with the Three Regions Tasting Set if you are not sure where to
+          begin.
         </p>
         <Button
           render={<Link href="/products" />}
@@ -47,10 +50,10 @@ export function CartView() {
           Browse the cellar
         </Button>
       </div>
-    )
+    );
   }
 
-  const taxAmount = cart.cost.totalTaxAmount
+  const taxAmount = cart.cost.totalTaxAmount;
 
   return (
     <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[1fr_22rem] lg:gap-16">
@@ -60,15 +63,18 @@ export function CartView() {
         ))}
       </ul>
 
-      <aside className="border-2 border-foreground bg-card p-6 lg:sticky lg:top-28">
+      <aside className="rounded-lg border-2 border-foreground bg-card p-6 lg:sticky lg:top-28">
         <h2 className="eyebrow text-primary">Order summary</h2>
 
         <dl className="mt-6 flex flex-col gap-3 text-sm">
           <div className="flex items-center justify-between">
             <dt className="text-muted-foreground">
-              Subtotal · {cart.totalQuantity} {cart.totalQuantity === 1 ? "item" : "items"}
+              Subtotal · {cart.totalQuantity}{" "}
+              {cart.totalQuantity === 1 ? "item" : "items"}
             </dt>
-            <dd className="tabular-nums">{formatPrice(cart.cost.subtotalAmount)}</dd>
+            <dd className="tabular-nums">
+              {formatPrice(cart.cost.subtotalAmount)}
+            </dd>
           </div>
 
           {taxAmount ? (
@@ -110,5 +116,5 @@ export function CartView() {
         </p>
       </aside>
     </div>
-  )
+  );
 }

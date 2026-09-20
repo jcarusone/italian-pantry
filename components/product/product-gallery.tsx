@@ -18,7 +18,7 @@ export function ProductGallery({
   if (gallery.length === 0) {
     return (
       <div
-        className="aspect-square w-full rounded-sm bg-secondary"
+        className="aspect-square w-full rounded-lg bg-secondary"
         aria-hidden="true"
       />
     );
@@ -28,7 +28,7 @@ export function ProductGallery({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative object-contain h-[75vh] w-full overflow-hidden rounded-sm bg-secondary">
+      <div className="relative object-contain h-[75vh] w-full overflow-hidden rounded-lg bg-secondary">
         <Image
           src={current.url || "/placeholder.svg"}
           alt={current.altText || title}
@@ -49,7 +49,7 @@ export function ProductGallery({
               aria-label={`View image ${index + 1} of ${gallery.length}`}
               aria-current={index === active}
               className={cn(
-                "relative h-20 w-20 overflow-hidden rounded-sm border-2 bg-secondary transition-colors",
+                "relative h-20 w-20 overflow-hidden rounded-lg border-2 bg-secondary transition-colors",
                 index === active
                   ? "border-primary"
                   : "border-transparent hover:border-primary/40",

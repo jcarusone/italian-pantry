@@ -1,25 +1,25 @@
-import type { Metadata } from "next"
-import { Clock, Mail, MapPin, Phone } from "lucide-react"
-import { ContactForm } from "@/components/contact/contact-form"
+import type { Metadata } from "next";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { ContactForm } from "@/components/contact/contact-form";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
 
 export const metadata: Metadata = {
   title: "Contact",
   description:
     "Questions about an order, wholesale enquiries, or which oil to start with. We reply to every message within one working day.",
-}
+};
 
 const DETAILS = [
   { icon: Mail, label: "Email", value: "ciao@italianpantry.com" },
-  { icon: Phone, label: "Telephone", value: "+1 (212) 555 0184" },
-  { icon: MapPin, label: "Warehouse", value: "84 Vestry Street, New York, NY 10013" },
+  { icon: Phone, label: "Telephone", value: "+1 (416) 949 8641" },
+  { icon: MapPin, label: "Warehouse", value: "Toronto, ON - Canada" },
   { icon: Clock, label: "Hours", value: "Monday to Friday, 9am – 6pm ET" },
-]
+];
 
 const FAQS = [
   {
@@ -47,22 +47,21 @@ const FAQS = [
     answer:
       "If a bottle arrives damaged or you are not happy with the oil, tell us within thirty days and we will replace it or refund you in full. We do not ask you to ship it back \u2014 there is no point paying freight on a bottle of oil twice.",
   },
-]
+];
 
 export default function ContactPage() {
   return (
     <div className="pb-20 sm:pb-28">
       <header className="border-b border-border bg-card">
         <div className="site-container py-14 sm:py-20">
-          <p className="eyebrow text-muted-foreground">
-            Contact
-          </p>
+          <p className="eyebrow text-muted-foreground">Contact</p>
           <h1 className="mt-4 font-display text-4xl leading-[0.95] uppercase text-balance sm:text-5xl md:text-6xl">
             Get in touch
           </h1>
           <p className="mt-5 max-w-xl leading-relaxed text-muted-foreground text-pretty">
-            Questions about an order, wholesale enquiries, or simply which oil to start with. A
-            person reads every message and replies within one working day.
+            Questions about an order, wholesale enquiries, or simply which oil
+            to start with. A person reads every message and replies within one
+            working day.
           </p>
         </div>
       </header>
@@ -73,10 +72,8 @@ export default function ContactPage() {
         </div>
 
         <aside className="flex flex-col gap-8">
-          <div className="rounded-sm border border-border bg-card p-6">
-            <h2 className="eyebrow text-muted-foreground">
-              Direct
-            </h2>
+          <div className="rounded-lg border border-border bg-card p-6">
+            <h2 className="eyebrow text-muted-foreground">Direct</h2>
             <dl className="mt-6 flex flex-col gap-5">
               {DETAILS.map((detail) => (
                 <div key={detail.label} className="flex gap-3">
@@ -85,8 +82,12 @@ export default function ContactPage() {
                     aria-hidden="true"
                   />
                   <div>
-                    <dt className="text-xs text-muted-foreground">{detail.label}</dt>
-                    <dd className="mt-0.5 text-sm leading-relaxed text-pretty">{detail.value}</dd>
+                    <dt className="text-xs text-muted-foreground">
+                      {detail.label}
+                    </dt>
+                    <dd className="mt-0.5 text-sm leading-relaxed text-pretty">
+                      {detail.value}
+                    </dd>
                   </div>
                 </div>
               ))}
@@ -97,23 +98,23 @@ export default function ContactPage() {
 
       <section className="site-container border-t border-border py-14 sm:py-20">
         <div className="mx-auto max-w-3xl">
-        <h2 className="font-display text-3xl leading-[1.0] uppercase text-balance sm:text-4xl">
-          Frequently asked
-        </h2>
-        <Accordion className="mt-10">
-          {FAQS.map((faq) => (
-            <AccordionItem key={faq.question} value={faq.question}>
-              <AccordionTrigger className="text-left text-base leading-snug">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="leading-relaxed text-muted-foreground text-pretty">
-                {faq.answer}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+          <h2 className="font-display text-3xl leading-[1.0] uppercase text-balance sm:text-4xl">
+            Frequently asked
+          </h2>
+          <Accordion className="mt-10">
+            {FAQS.map((faq) => (
+              <AccordionItem key={faq.question} value={faq.question}>
+                <AccordionTrigger className="text-left text-base leading-snug">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="leading-relaxed text-muted-foreground text-pretty">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
     </div>
-  )
+  );
 }

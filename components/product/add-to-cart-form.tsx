@@ -1,58 +1,62 @@
-"use client"
+"use client";
 
-import { useMemo, useState, useTransition } from "react"
-import { Check, Loader2, Minus, Plus } from "lucide-react"
-import { toast } from "sonner"
+import { useMemo, useState, useTransition } from "react";
+import { Check, Loader2, Minus, Plus } from "lucide-react";
+import { toast } from "sonner";
 
-import { useCart } from "@/components/cart/cart-provider"
-import { Button } from "@/components/ui/button"
-import { VariantPrice } from "@/components/product/product-price"
-import { formatPrice } from "@/lib/format"
-import { addToCart } from "@/lib/shopify/cart-actions"
-import type { Product, ProductVariant } from "@/lib/shopify/types"
-import { cn } from "@/lib/utils"
+import { useCart } from "@/components/cart/cart-provider";
+import { Button } from "@/components/ui/button";
+import { VariantPrice } from "@/components/product/product-price";
+import { formatPrice } from "@/lib/format";
+import { addToCart } from "@/lib/shopify/cart-actions";
+import type { Product, ProductVariant } from "@/lib/shopify/types";
+import { cn } from "@/lib/utils";
 
 export function AddToCartForm({ product }: { product: Product }) {
-  const { openCart, refresh } = useCart()
-  const [isPending, startTransition] = useTransition()
-  const [justAdded, setJustAdded] = useState(false)
-  const [quantity, setQuantity] = useState(1)
+  const { openCart, refresh } = useCart();
+  const [isPending, startTransition] = useTransition();
+  const [justAdded, setJustAdded] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
-  const availableVariants = product.variants
+  const availableVariants = product.variants;
   const [selectedId, setSelectedId] = useState<string>(
     () =>
       availableVariants.find((variant) => variant.availableForSale)?.id ??
       availableVariants[0]?.id ??
       "",
-  )
+  );
 
   const selected = useMemo<ProductVariant | undefined>(
     () => availableVariants.find((variant) => variant.id === selectedId),
     [availableVariants, selectedId],
-  )
+  );
 
   const hasRealOptions =
     product.options.length > 0 &&
-    !(product.options.length === 1 && product.options[0].values[0] === "Default Title")
+    !(
+      product.options.length === 1 &&
+      product.options[0].values[0] === "Default Title"
+    );
 
-  const canPurchase = Boolean(selected?.availableForSale) && product.availableForSale
+  const canPurchase =
+    Boolean(selected?.availableForSale) && product.availableForSale;
 
   function handleAdd() {
-    if (!selected) return
+    if (!selected) return;
 
     startTransition(async () => {
-      const result = await addToCart(selected.id, quantity)
+      const result = await addToCart(selected.id, quantity);
 
       if (!result.ok) {
-        toast.error(result.error)
-        return
+        toast.error(result.error);
+        return;
       }
 
-      await refresh()
-      setJustAdded(true)
-      openCart()
-      window.setTimeout(() => setJustAdded(false), 2000)
-    })
+      await refresh();
+      setJustAdded(true);
+      openCart();
+      window.setTimeout(() => setJustAdded(false), 2000);
+    });
   }
 
   return (
@@ -72,10 +76,10 @@ export function AddToCartForm({ product }: { product: Product }) {
 
           <div className="flex flex-wrap gap-2">
             {availableVariants.map((variant) => {
-              const isSelected = variant.id === selectedId
+              const isSelected = variant.id === selectedId;
               const label = variant.selectedOptions
                 .map((option) => option.value)
-                .join(" / ")
+                .join(" / ");
 
               return (
                 <button
@@ -85,7 +89,7 @@ export function AddToCartForm({ product }: { product: Product }) {
                   disabled={!variant.availableForSale}
                   aria-pressed={isSelected}
                   className={cn(
-                    "flex min-w-24 flex-col items-start gap-1 rounded-sm border px-3.5 py-2.5 text-left transition-all",
+                    "flex min-w-24 flex-col items-start gap-1 rounded-lg border px-3.5 py-2.5 text-left transition-all",
                     isSelected
                       ? "border-primary bg-primary/5 ring-1 ring-primary"
                       : "border-border hover:border-foreground/30",
@@ -99,14 +103,14 @@ export function AddToCartForm({ product }: { product: Product }) {
                     compareAtPrice={variant.compareAtPrice}
                   />
                 </button>
-              )
+              );
             })}
           </div>
         </div>
       ) : null}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
-        <div className="flex h-12 items-center rounded-sm border border-border">
+        <div className="flex h-12 items-center rounded-lg border border-border">
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.max(1, value - 1))}
@@ -115,7 +119,10 @@ export function AddToCartForm({ product }: { product: Product }) {
             <Minus className="size-3.5" aria-hidden="true" />
             <span className="sr-only">Decrease quantity</span>
           </button>
-          <span className="w-9 text-center text-sm tabular-nums" aria-live="polite">
+          <span
+            className="w-9 text-center text-sm tabular-nums"
+            aria-live="polite"
+          >
             {quantity}
           </span>
           <button
@@ -132,7 +139,7 @@ export function AddToCartForm({ product }: { product: Product }) {
           size="lg"
           onClick={handleAdd}
           disabled={!canPurchase || isPending}
-          className="h-12 flex-1 rounded-sm text-sm"
+          className="h-12 flex-1 rounded-lg text-sm"
         >
           {isPending ? (
             <Loader2 className="size-4 animate-spin" aria-hidden="true" />
@@ -154,5 +161,5 @@ export function AddToCartForm({ product }: { product: Product }) {
         </Button>
       </div>
     </div>
-  )
+  );
 }

@@ -36,11 +36,11 @@ export function SiteHeader() {
       </p>
 
       <div className="border-b border-foreground">
-        <div className="site-container flex h-16 items-center gap-4">
+        <div className="site-container flex h-[4.75rem] items-center gap-4 sm:h-22">
           <button
             type="button"
             onClick={() => setMobileOpen((open) => !open)}
-            className="-ml-2 flex size-9 items-center justify-center text-foreground transition-colors hover:bg-secondary lg:hidden"
+            className="-ml-2 flex size-9 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-secondary lg:hidden"
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? (
@@ -51,8 +51,12 @@ export function SiteHeader() {
             <span className="sr-only">Toggle navigation</span>
           </button>
 
-          <Link href="/" className="mr-auto flex items-center">
-            <Logo />
+          <Link href="/" className="mr-auto flex items-center py-1">
+            <Logo
+              variant="header"
+              priority
+              className="h-8 w-auto sm:h-9 md:h-14"
+            />
           </Link>
 
           <nav
@@ -79,10 +83,10 @@ export function SiteHeader() {
             })}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2 lg:ml-7">
+          <div className="ml-auto flex items-center gap-2 lg:ml-3">
             <Link
               href="/contact"
-              className="hidden h-9 items-center bg-foreground px-4 text-[0.6875rem] font-semibold tracking-[0.14em] text-background uppercase transition-colors hover:bg-primary sm:flex"
+              className="hidden h-9 items-center rounded-lg bg-foreground px-4 text-[0.6875rem] font-semibold tracking-[0.14em] text-background uppercase transition-colors hover:bg-primary sm:flex"
             >
               Contact us
             </Link>
@@ -90,7 +94,7 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={openCart}
-              className="relative flex h-9 items-center gap-2 border border-foreground px-3 text-[0.6875rem] font-semibold tracking-[0.14em] uppercase transition-colors hover:bg-accent"
+              className="relative flex h-9 items-center gap-2 rounded-lg border border-foreground px-3 text-[0.6875rem] font-semibold tracking-[0.14em] uppercase transition-colors hover:bg-accent"
             >
               <ShoppingBag className="size-4" aria-hidden="true" />
               <span className="tabular-nums">{totalQuantity}</span>

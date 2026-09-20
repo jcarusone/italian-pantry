@@ -1,33 +1,31 @@
-import type { Metadata } from "next"
-import Image from "next/image"
-import Link from "next/link"
-import { getArticles } from "@/lib/shopify"
-import { ArticleCard } from "@/components/journal/article-card"
-import { formatDate } from "@/lib/format"
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { getArticles } from "@/lib/shopify";
+import { ArticleCard } from "@/components/journal/article-card";
+import { formatDate } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "Stories",
   description:
     "Notes from the groves and the mill: how olive oil is made, how to taste it, and how to read a label without being fooled.",
-}
+};
 
 export default async function JournalPage() {
-  const articles = await getArticles(24)
-  const [lead, ...rest] = articles
+  const articles = await getArticles(24);
+  const [lead, ...rest] = articles;
 
   return (
     <div className="pb-20 sm:pb-28">
       <header className="border-b border-border bg-card">
         <div className="site-container py-14 sm:py-20">
-          <p className="eyebrow text-muted-foreground">
-            Stories
-          </p>
+          <p className="eyebrow text-muted-foreground">Stories</p>
           <h1 className="mt-4 font-display text-4xl leading-[0.95] uppercase text-balance sm:text-5xl md:text-6xl">
             Notes from the groves
           </h1>
           <p className="mt-5 max-w-xl leading-relaxed text-muted-foreground text-pretty">
-            How the oil is actually made, how to taste it properly, and how to read a label without
-            being fooled.
+            How the oil is actually made, how to taste it properly, and how to
+            read a label without being fooled.
           </p>
         </div>
       </header>
@@ -43,7 +41,7 @@ export default async function JournalPage() {
             href={`/journal/${lead.handle}`}
             className="group grid grid-cols-1 items-center gap-8 border-b border-border py-14 lg:grid-cols-2 lg:gap-14"
           >
-            <div className="relative aspect-4/3 overflow-hidden rounded-sm bg-secondary">
+            <div className="relative aspect-4/3 overflow-hidden rounded-lg bg-secondary">
               {lead.image ? (
                 <Image
                   src={lead.image.url || "/placeholder.svg"}
@@ -84,5 +82,5 @@ export default async function JournalPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ShoppingBag, X } from "lucide-react"
+import Link from "next/link";
+import { ShoppingBag, X } from "lucide-react";
 
-import { CartLineItem } from "@/components/cart/cart-line-item"
-import { useCart } from "@/components/cart/cart-provider"
-import { CheckoutButton } from "@/components/cart/checkout-button"
-import { Button } from "@/components/ui/button"
+import { CartLineItem } from "@/components/cart/cart-line-item";
+import { useCart } from "@/components/cart/cart-provider";
+import { CheckoutButton } from "@/components/cart/checkout-button";
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -14,14 +14,14 @@ import {
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
-import { Separator } from "@/components/ui/separator"
-import { formatPrice } from "@/lib/format"
+} from "@/components/ui/drawer";
+import { Separator } from "@/components/ui/separator";
+import { formatPrice } from "@/lib/format";
 
 export function CartDrawer() {
-  const { cart, isOpen, setOpen, closeCart } = useCart()
-  const lines = cart?.lines ?? []
-  const isEmpty = lines.length === 0
+  const { cart, isOpen, setOpen, closeCart } = useCart();
+  const lines = cart?.lines ?? [];
+  const isEmpty = lines.length === 0;
 
   return (
     <Drawer open={isOpen} onOpenChange={setOpen} swipeDirection="right">
@@ -50,7 +50,10 @@ export function CartDrawer() {
         {isEmpty ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 text-center">
             <div className="flex size-14 items-center justify-center bg-secondary">
-              <ShoppingBag className="size-5 text-muted-foreground" aria-hidden="true" />
+              <ShoppingBag
+                className="size-5 text-muted-foreground"
+                aria-hidden="true"
+              />
             </div>
             <div className="flex flex-col gap-1.5">
               <p className="font-display text-lg">Your cart is empty</p>
@@ -60,7 +63,7 @@ export function CartDrawer() {
             </div>
             <Button
               variant="outline"
-              className="rounded-sm bg-transparent"
+              className="rounded-lg bg-transparent"
               onClick={closeCart}
               render={<Link href="/products" />}
             >
@@ -86,11 +89,15 @@ export function CartDrawer() {
               <dl className="flex flex-col gap-2 text-sm">
                 <div className="flex items-baseline justify-between">
                   <dt className="text-muted-foreground">Subtotal</dt>
-                  <dd className="tabular-nums">{formatPrice(cart?.cost.subtotalAmount)}</dd>
+                  <dd className="tabular-nums">
+                    {formatPrice(cart?.cost.subtotalAmount)}
+                  </dd>
                 </div>
                 <div className="flex items-baseline justify-between">
                   <dt className="text-muted-foreground">Shipping</dt>
-                  <dd className="text-xs text-muted-foreground">Calculated at checkout</dd>
+                  <dd className="text-xs text-muted-foreground">
+                    Calculated at checkout
+                  </dd>
                 </div>
               </dl>
 
@@ -104,10 +111,12 @@ export function CartDrawer() {
               </div>
 
               <div className="mt-5 flex flex-col gap-2">
-                {cart ? <CheckoutButton checkoutUrl={cart.checkoutUrl} /> : null}
+                {cart ? (
+                  <CheckoutButton checkoutUrl={cart.checkoutUrl} />
+                ) : null}
                 <Button
                   variant="ghost"
-                  className="h-10 rounded-sm text-xs"
+                  className="h-10 rounded-lg text-xs"
                   onClick={closeCart}
                   render={<Link href="/cart" />}
                 >
@@ -119,5 +128,5 @@ export function CartDrawer() {
         )}
       </DrawerContent>
     </Drawer>
-  )
+  );
 }

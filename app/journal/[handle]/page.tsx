@@ -1,21 +1,21 @@
-import type { Metadata } from "next"
-import Image from "next/image"
-import Link from "next/link"
-import { notFound } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
-import { getArticle, getArticles } from "@/lib/shopify"
-import { ArticleCard } from "@/components/journal/article-card"
-import { SectionHeading } from "@/components/layout/section-heading"
-import { Badge } from "@/components/ui/badge"
-import { formatDate } from "@/lib/format"
+import { getArticle, getArticles } from "@/lib/shopify";
+import { ArticleCard } from "@/components/journal/article-card";
+import { SectionHeading } from "@/components/layout/section-heading";
+import { Badge } from "@/components/ui/badge";
+import { formatDate } from "@/lib/format";
 
 export async function generateMetadata(props: {
-  params: Promise<{ handle: string }>
+  params: Promise<{ handle: string }>;
 }): Promise<Metadata> {
-  const { handle } = await props.params
-  const article = await getArticle(handle)
-  if (!article) return { title: "Article not found" }
+  const { handle } = await props.params;
+  const article = await getArticle(handle);
+  if (!article) return { title: "Article not found" };
 
   return {
     title: article.title,
@@ -23,18 +23,24 @@ export async function generateMetadata(props: {
     openGraph: {
       type: "article",
       publishedTime: article.publishedAt,
-      images: article.image ? [{ url: article.image.url, alt: article.title }] : undefined,
+      images: article.image
+        ? [{ url: article.image.url, alt: article.title }]
+        : undefined,
     },
-  }
+  };
 }
 
-export default async function ArticlePage(props: { params: Promise<{ handle: string }> }) {
-  const { handle } = await props.params
-  const article = await getArticle(handle)
+export default async function ArticlePage(props: {
+  params: Promise<{ handle: string }>;
+}) {
+  const { handle } = await props.params;
+  const article = await getArticle(handle);
 
-  if (!article) notFound()
+  if (!article) notFound();
 
-  const more = (await getArticles(6)).filter((a) => a.handle !== handle).slice(0, 3)
+  const more = (await getArticles(6))
+    .filter((a) => a.handle !== handle)
+    .slice(0, 3);
 
   return (
     <article className="pb-20 sm:pb-28">
@@ -50,7 +56,9 @@ export default async function ArticlePage(props: { params: Promise<{ handle: str
 
           <header className="mt-8">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2 eyebrow text-muted-foreground">
-              <time dateTime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
+              <time dateTime={article.publishedAt}>
+                {formatDate(article.publishedAt)}
+              </time>
               {article.authorName ? (
                 <>
                   <span aria-hidden="true">·</span>
@@ -84,7 +92,7 @@ export default async function ArticlePage(props: { params: Promise<{ handle: str
 
       {article.image ? (
         <div className="site-container mt-10">
-          <div className="relative aspect-16/9 max-w-5xl overflow-hidden rounded-sm bg-secondary">
+          <div className="relative aspect-16/9 max-w-5xl overflow-hidden rounded-lg bg-secondary">
             <Image
               src={article.image.url || "/placeholder.svg"}
               alt={article.image.altText ?? article.title}
@@ -115,5 +123,5 @@ export default async function ArticlePage(props: { params: Promise<{ handle: str
         </section>
       )}
     </article>
-  )
+  );
 }

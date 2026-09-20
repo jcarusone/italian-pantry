@@ -27,10 +27,6 @@ const CONTACT_DETAILS = [
     label: "Warehouse",
     value: "Toronto, ON - Canada",
   },
-  {
-    label: "Hours",
-    value: "Monday to Friday, 9am – 6pm EST",
-  },
 ];
 
 function FooterLinkList({
@@ -109,7 +105,13 @@ export async function SiteFooter({ className }: { className?: string }) {
         <div className="site-container pb-16 pt-8">
           <div className="flex flex-col gap-10 lg:flex-row lg:items-start">
             <div className="flex max-w-sm shrink-0 flex-col gap-5">
-              <Logo tone="inverted" />
+              <Link href="/" className="inline-flex w-fit">
+                <Logo
+                  variant="footer"
+                  className="h-9 w-auto sm:h-14"
+                  opacity={75}
+                />
+              </Link>
               <p className="text-sm leading-relaxed text-background/70">
                 Authentic Italian food from small-batch artisan producers and
                 family farms in Italy&apos;s Abruzzo region. Imported directly
