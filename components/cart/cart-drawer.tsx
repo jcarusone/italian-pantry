@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import { CartLineItem } from "@/components/cart/cart-line-item";
 import { useCart } from "@/components/cart/cart-provider";
 import { CheckoutButton } from "@/components/cart/checkout-button";
-import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -15,113 +14,106 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Separator } from "@/components/ui/separator";
+import { pillClasses } from "@/components/ui/pill";
 import { formatPrice } from "@/lib/format";
 
 export function CartDrawer() {
-  const { cart, isOpen, setOpen, closeCart } = useCart();
+  const { cart, isOpen, setOpen, closeCart, freeShippingThreshold } = useCart();
   const lines = cart?.lines ?? [];
   const isEmpty = lines.length === 0;
 
+  const subtotal = Number.parseFloat(cart?.cost.subtotalAmount.amount ?? "0");
+  const remaining = Math.max(0, freeShippingThreshold - subtotal);
+  const progress = Math.min(1, subtotal / freeShippingThreshold);
+
   return (
     <Drawer open={isOpen} onOpenChange={setOpen} swipeDirection="right">
-      <DrawerContent className="h-full max-h-none gap-0 border-border bg-background p-0 sm:max-w-md">
-        <DrawerHeader className="relative border-b border-border px-5 py-4">
-          <DrawerTitle className="font-display text-xl">Your cart</DrawerTitle>
-          <DrawerDescription className="text-xs">
+      <DrawerContent className="h-full max-h-none gap-0 border-none bg-limestone p-0 sm:max-w-md">
+        <DrawerHeader className="relative border-b border-frantoio/12 px-6 py-5">
+          <DrawerTitle className="font-display text-[1.75rem] leading-none font-normal">
+            Your cart
+          </DrawerTitle>
+          <DrawerDescription className="mt-1 text-[0.875rem] text-muted-foreground">
             {isEmpty
               ? "Nothing here yet."
               : `${cart?.totalQuantity} ${cart?.totalQuantity === 1 ? "item" : "items"}`}
           </DrawerDescription>
           <DrawerClose
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                className="absolute top-3 right-3"
-              />
-            }
+            className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full transition-colors hover:bg-frantoio/8"
           >
             <X className="size-4" aria-hidden="true" />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">Close cart</span>
           </DrawerClose>
         </DrawerHeader>
 
         {isEmpty ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 text-center">
-            <div className="flex size-14 items-center justify-center bg-secondary">
-              <ShoppingBag
-                className="size-5 text-muted-foreground"
-                aria-hidden="true"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <p className="font-display text-lg">Your cart is empty</p>
-              <p className="text-sm text-muted-foreground">
-                Start with the oil everyone comes back for.
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              className="rounded-lg bg-transparent"
-              onClick={closeCart}
-              render={<Link href="/products" />}
-            >
-              Browse the shop
-            </Button>
+          <div className="flex flex-1 flex-col items-start justify-center gap-5 px-6">
+            <p className="font-display text-[2rem] leading-tight">Your pantry is empty.</p>
+            <p className="text-muted-foreground">
+              Start with our extra virgin olive oil from Abruzzo.
+            </p>
+            <Link href="/products" onClick={closeCart} className={pillClasses("dark")}>
+              Browse the collection
+            </Link>
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto px-5 py-5">
+            <div className="border-b border-frantoio/12 px-6 py-4">
+              <p className="text-[0.875rem]">
+                {remaining > 0 ? (
+                  <>
+                    Add{" "}
+                    <strong className="font-semibold">
+                      {formatPrice({
+                        amount: remaining.toFixed(2),
+                        currencyCode: cart?.cost.subtotalAmount.currencyCode ?? "CAD",
+                      })}
+                    </strong>{" "}
+                    more for free shipping across Canada.
+                  </>
+                ) : (
+                  "Your order ships free anywhere in Canada."
+                )}
+              </p>
+              <div className="mt-3 h-1 overflow-hidden rounded-full bg-frantoio/10">
+                <div
+                  className="h-full origin-left rounded-full bg-gold transition-transform duration-700 ease-(--ease-pour)"
+                  style={{ transform: `scaleX(${progress})` }}
+                />
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-6 py-6" data-lenis-prevent>
               <ul className="flex flex-col gap-6">
                 {lines.map((line) => (
-                  <CartLineItem
-                    key={line.id}
-                    line={line}
-                    size="compact"
-                    onNavigate={closeCart}
-                  />
+                  <CartLineItem key={line.id} line={line} size="compact" onNavigate={closeCart} />
                 ))}
               </ul>
             </div>
 
-            <div className="border-t border-border bg-card px-5 py-5">
-              <dl className="flex flex-col gap-2 text-sm">
+            <div className="border-t border-frantoio/12 bg-card px-6 py-6">
+              <dl className="flex flex-col gap-2 text-[0.9375rem]">
                 <div className="flex items-baseline justify-between">
                   <dt className="text-muted-foreground">Subtotal</dt>
-                  <dd className="tabular-nums">
+                  <dd className="font-display text-[1.75rem] leading-none tabular-nums">
                     {formatPrice(cart?.cost.subtotalAmount)}
                   </dd>
                 </div>
-                <div className="flex items-baseline justify-between">
-                  <dt className="text-muted-foreground">Shipping</dt>
-                  <dd className="text-xs text-muted-foreground">
-                    Calculated at checkout
-                  </dd>
+                <div className="flex items-baseline justify-between text-[0.875rem]">
+                  <dt className="text-muted-foreground">Shipping and taxes</dt>
+                  <dd className="text-muted-foreground">Calculated at checkout</dd>
                 </div>
               </dl>
 
-              <Separator className="my-4" />
-
-              <div className="flex items-baseline justify-between">
-                <span className="eyebrow text-muted-foreground">Total</span>
-                <span className="font-display text-2xl tabular-nums">
-                  {formatPrice(cart?.cost.totalAmount)}
-                </span>
-              </div>
-
-              <div className="mt-5 flex flex-col gap-2">
-                {cart ? (
-                  <CheckoutButton checkoutUrl={cart.checkoutUrl} />
-                ) : null}
-                <Button
-                  variant="ghost"
-                  className="h-10 rounded-lg text-xs"
+              <div className="mt-6 flex flex-col gap-3">
+                {cart ? <CheckoutButton checkoutUrl={cart.checkoutUrl} /> : null}
+                <Link
+                  href="/cart"
                   onClick={closeCart}
-                  render={<Link href="/cart" />}
+                  className="text-center text-[0.9375rem] font-medium underline-offset-4 hover:underline"
                 >
                   View full cart
-                </Button>
+                </Link>
               </div>
             </div>
           </>

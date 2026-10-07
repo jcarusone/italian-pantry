@@ -1,113 +1,43 @@
 import { Analytics } from "@vercel/analytics/next";
-import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import type { Viewport } from "next";
 
-import { CartDrawer } from "@/components/cart/cart-drawer";
-import { CartProvider } from "@/components/cart/cart-provider";
-import { FooterReveal } from "@/components/layout/footer-reveal";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
+import "@fontsource-variable/newsreader/opsz.css";
+import "@fontsource-variable/newsreader/opsz-italic.css";
+import "@fontsource-variable/manrope/wght.css";
+
 import { Toaster } from "@/components/ui/sonner";
-import { fetchCart } from "@/lib/shopify/cart-actions";
+import { SITE } from "@/lib/site";
 
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-export const metadata: Metadata = {
-  title: {
-    default: "Italian Pantry — 100% Italian Extra Virgin Olive Oil",
-    template: "%s · Italian Pantry",
-  },
-  description:
-    "Single-estate extra virgin olive oil pressed from 100% Italian olives in Tuscany, Puglia, Umbria and Sicily. Every bottle carries a harvest date and a named cultivar.",
-  keywords: [
-    "Italian olive oil",
-    "extra virgin olive oil",
-    "single estate olive oil",
-    "Tuscan olive oil",
-    "DOP olive oil",
-    "Italian pantry",
-  ],
-  openGraph: {
-    title: "Italian Pantry — 100% Italian Extra Virgin Olive Oil",
-    description:
-      "Single-estate extra virgin olive oil pressed from 100% Italian olives. Harvest dated, cold extracted, shipped from Brooklyn.",
-    type: "website",
-    siteName: "Italian Pantry",
-  },
+export const metadata = {
+  metadataBase: new URL(SITE.url),
   icons: {
     icon: [
-      {
-        url: "/favicon-16x16.png",
-        sizes: "16x16",
-        type: "image/png",
-      },
-      {
-        url: "/favicon-32x32.png",
-        sizes: "32x32",
-        type: "image/png",
-      },
-      {
-        url: "/favicon-48x48.png",
-        sizes: "48x48",
-        type: "image/png",
-      },
-      {
-        url: "/android-chrome-192x192.png",
-        sizes: "192x192",
-        type: "image/png",
-      },
-      {
-        url: "/android-chrome-512x512.png",
-        sizes: "512x512",
-        type: "image/png",
-      },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/favicon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: [
-      {
-        url: "/apple-touch-icon.png",
-        sizes: "180x180",
-        type: "image/png",
-      },
-    ],
+    apple: [{ url: "/favicon-180x180.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
 export const viewport: Viewport = {
   colorScheme: "light",
-  themeColor: "#f5f1e8",
+  themeColor: "#1c1812",
   width: "device-width",
   initialScale: 1,
 };
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const cart = await fetchCart();
-
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} bg-background`}>
-      <body className="min-h-dvh bg-background antialiased">
-        <CartProvider initialCart={cart}>
-          <FooterReveal
-            footer={
-              <SiteFooter className="fixed inset-x-0 bottom-0 z-0 h-dvh" />
-            }
-          >
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-          </FooterReveal>
-          <CartDrawer />
-        </CartProvider>
+    <html lang="en-CA" data-scroll-behavior="smooth" className="bg-frantoio">
+      <body className="min-h-dvh antialiased">
+        {children}
         <Toaster position="bottom-right" />
-        {process.env.NODE_ENV === "production" && <Analytics />}
+        {process.env.NODE_ENV === "production" && process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>
   );

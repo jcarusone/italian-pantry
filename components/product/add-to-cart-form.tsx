@@ -5,41 +5,41 @@ import { Check, Loader2, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { useCart } from "@/components/cart/cart-provider";
-import { Button } from "@/components/ui/button";
-import { VariantPrice } from "@/components/product/product-price";
+import { pillClasses } from "@/components/ui/pill";
 import { formatPrice } from "@/lib/format";
 import { addToCart } from "@/lib/shopify/cart-actions";
 import type { Product, ProductVariant } from "@/lib/shopify/types";
 import { cn } from "@/lib/utils";
 
-export function AddToCartForm({ product }: { product: Product }) {
+export function AddToCartForm({
+  product,
+  tone = "light",
+}: {
+  product: Product;
+  /** "dark" when placed on the bottle-glass background. */
+  tone?: "light" | "dark";
+}) {
   const { openCart, refresh } = useCart();
   const [isPending, startTransition] = useTransition();
   const [justAdded, setJustAdded] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const dark = tone === "dark";
 
-  const availableVariants = product.variants;
+  const variants = product.variants;
   const [selectedId, setSelectedId] = useState<string>(
-    () =>
-      availableVariants.find((variant) => variant.availableForSale)?.id ??
-      availableVariants[0]?.id ??
-      "",
+    () => variants.find((variant) => variant.availableForSale)?.id ?? variants[0]?.id ?? "",
   );
 
   const selected = useMemo<ProductVariant | undefined>(
-    () => availableVariants.find((variant) => variant.id === selectedId),
-    [availableVariants, selectedId],
+    () => variants.find((variant) => variant.id === selectedId),
+    [variants, selectedId],
   );
 
   const hasRealOptions =
     product.options.length > 0 &&
-    !(
-      product.options.length === 1 &&
-      product.options[0].values[0] === "Default Title"
-    );
+    !(product.options.length === 1 && product.options[0].values[0] === "Default Title");
 
-  const canPurchase =
-    Boolean(selected?.availableForSale) && product.availableForSale;
+  const canPurchase = Boolean(selected?.availableForSale) && product.availableForSale;
 
   function handleAdd() {
     if (!selected) return;
@@ -62,24 +62,14 @@ export function AddToCartForm({ product }: { product: Product }) {
   return (
     <div className="flex flex-col gap-6">
       {hasRealOptions ? (
-        <div className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between">
-            <span className="eyebrow text-muted-foreground">
-              {product.options[0]?.name ?? "Option"}
-            </span>
-            {selected ? (
-              <span className="text-xs text-muted-foreground">
-                {selected.availableForSale ? "In stock" : "Out of stock"}
-              </span>
-            ) : null}
-          </div>
-
+        <fieldset className="flex flex-col gap-3">
+          <legend className={cn("mb-2.5 text-[0.8125rem]", dark ? "text-limestone/60" : "text-muted-foreground")}>
+            {product.options[0]?.name ?? "Option"}
+          </legend>
           <div className="flex flex-wrap gap-2">
-            {availableVariants.map((variant) => {
+            {variants.map((variant) => {
               const isSelected = variant.id === selectedId;
-              const label = variant.selectedOptions
-                .map((option) => option.value)
-                .join(" / ");
+              const label = variant.selectedOptions.map((option) => option.value).join(" / ");
 
               return (
                 <button
@@ -89,57 +79,59 @@ export function AddToCartForm({ product }: { product: Product }) {
                   disabled={!variant.availableForSale}
                   aria-pressed={isSelected}
                   className={cn(
-                    "flex min-w-24 flex-col items-start gap-1 rounded-lg border px-3.5 py-2.5 text-left transition-all",
-                    isSelected
-                      ? "border-primary bg-primary/5 ring-1 ring-primary"
-                      : "border-border hover:border-foreground/30",
-                    !variant.availableForSale &&
-                      "cursor-not-allowed opacity-40 line-through",
+                    "flex h-10 items-center gap-2.5 rounded-full border px-4 text-[0.875rem] transition-colors duration-300",
+                    dark
+                      ? isSelected
+                        ? "border-olio bg-olio/10 text-limestone"
+                        : "border-limestone/25 text-limestone/80 hover:border-limestone/60"
+                      : isSelected
+                        ? "border-frantoio bg-frantoio text-limestone"
+                        : "border-frantoio/20 hover:border-frantoio/60",
+                    !variant.availableForSale && "cursor-not-allowed line-through opacity-40",
                   )}
                 >
-                  <span className="text-sm font-medium">{label}</span>
-                  <VariantPrice
-                    price={variant.price}
-                    compareAtPrice={variant.compareAtPrice}
-                  />
+                  <span className="font-semibold">{label}</span>
+                  <span className="tabular-nums opacity-70">{formatPrice(variant.price)}</span>
                 </button>
               );
             })}
           </div>
-        </div>
+        </fieldset>
       ) : null}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
-        <div className="flex h-12 items-center rounded-lg border border-border">
+      <div className="flex items-stretch gap-3">
+        <div
+          className={cn(
+            "flex h-11 w-fit shrink-0 items-center justify-between rounded-full border px-1",
+            dark ? "border-limestone/25" : "border-frantoio/20",
+          )}
+        >
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-            className="flex size-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+            className="flex size-9 items-center justify-center rounded-full opacity-70 transition-opacity hover:opacity-100"
           >
-            <Minus className="size-3.5" aria-hidden="true" />
+            <Minus className="size-3" aria-hidden="true" />
             <span className="sr-only">Decrease quantity</span>
           </button>
-          <span
-            className="w-9 text-center text-sm tabular-nums"
-            aria-live="polite"
-          >
+          <span className="w-6 text-center text-[0.875rem] tabular-nums" aria-live="polite">
             {quantity}
           </span>
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.min(20, value + 1))}
-            className="flex size-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+            className="flex size-9 items-center justify-center rounded-full opacity-70 transition-opacity hover:opacity-100"
           >
-            <Plus className="size-3.5" aria-hidden="true" />
+            <Plus className="size-3" aria-hidden="true" />
             <span className="sr-only">Increase quantity</span>
           </button>
         </div>
 
-        <Button
-          size="lg"
+        <button
+          type="button"
           onClick={handleAdd}
           disabled={!canPurchase || isPending}
-          className="h-12 flex-1 rounded-lg text-sm"
+          className={pillClasses(dark ? "olio" : "dark", "min-w-0 flex-1 sm:max-w-sm")}
         >
           {isPending ? (
             <Loader2 className="size-4 animate-spin" aria-hidden="true" />
@@ -151,14 +143,12 @@ export function AddToCartForm({ product }: { product: Product }) {
           ) : canPurchase ? (
             <>
               Add to cart
-              <span className="ml-1.5 tabular-nums opacity-80 before:mr-1.5 before:opacity-50 before:content-['·']">
-                {formatPrice(selected?.price)}
-              </span>
+              <span className="tabular-nums opacity-70">{formatPrice(selected?.price)}</span>
             </>
           ) : (
             "Sold out"
           )}
-        </Button>
+        </button>
       </div>
     </div>
   );

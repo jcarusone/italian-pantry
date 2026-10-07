@@ -2,129 +2,196 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Menu, ShoppingBag, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+} from "motion/react";
 
 import { useCart } from "@/components/cart/cart-provider";
 import { Logo } from "@/components/layout/logo";
+import type { NavLink } from "@/lib/cms/defaults-nav";
 import { cn } from "@/lib/utils";
 
-const NAV_LINKS = [
-  { href: "/products", label: "Products" },
-  { href: "/journal", label: "Stories" },
-  { href: "/about", label: "About" },
-];
 
 function isLinkActive(href: string, pathname: string) {
+  if (href.includes("#")) return false;
   if (href === pathname) return true;
   return href !== "/" && pathname.startsWith(`${href}/`);
 }
 
-export function SiteHeader() {
+export function SiteHeader({ links }: { links: NavLink[] }) {
   const pathname = usePathname();
   const { totalQuantity, openCart } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [atTop, setAtTop] = useState(true);
+  const [hidden, setHidden] = useState(false);
+  const { scrollY } = useScroll();
 
+  // Distance travelled upward since the visitor last scrolled down.
+  const upTravel = useRef(0);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? latest;
+    const delta = latest - previous;
+    setAtTop(latest < 60);
+
+    if (latest < 120) {
+      // Always visible near the top of the page.
+      upTravel.current = 0;
+      setHidden(false);
+    } else if (delta > 0) {
+      // Any downward movement, however slow, keeps the bar hidden.
+      upTravel.current = 0;
+      setHidden(true);
+    } else if (delta < 0) {
+      // Only a deliberate scroll up (not a tiny bounce) brings it back.
+      upTravel.current += -delta;
+      if (upTravel.current > 24) setHidden(false);
+    }
+  });
+
+  // Pages that open on a full-bleed dark image mark it with data-dark-hero,
+  // so the bar starts transparent over it.
+  const [darkHero, setDarkHero] = useState(() => pathname === "/" || pathname === "/about");
   useEffect(() => {
     setMobileOpen(false);
+    setDarkHero(Boolean(document.querySelector("[data-dark-hero]")));
   }, [pathname]);
 
+  useEffect(() => {
+    document.documentElement.style.overflow = mobileOpen ? "hidden" : "";
+  }, [mobileOpen]);
+
+  const overDarkHero = darkHero && atTop && !mobileOpen;
+
   return (
-    <header className="sticky top-0 z-40 bg-background">
-      <p className="flex items-center justify-center bg-lime-700 px-4 py-1.5 text-center text-[0.685rem] font-bold tracking-[0.1em] text-background uppercase">
-        Free shipping in the GTA on all orders over $75
-      </p>
-
-      <div className="border-b border-foreground">
-        <div className="site-container flex h-[4.75rem] items-center gap-4 sm:h-22">
-          <button
-            type="button"
-            onClick={() => setMobileOpen((open) => !open)}
-            className="-ml-2 flex size-9 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-secondary lg:hidden"
-            aria-expanded={mobileOpen}
-          >
-            {mobileOpen ? (
-              <X className="size-4" aria-hidden="true" />
-            ) : (
-              <Menu className="size-4" aria-hidden="true" />
-            )}
-            <span className="sr-only">Toggle navigation</span>
-          </button>
-
-          <Link href="/" className="mr-auto flex items-center py-1">
+    <>
+      <motion.header
+        animate={{ y: hidden && !mobileOpen ? "-100%" : "0%" }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className={cn(
+          "sticky top-0 z-40 h-(--nav-h) transition-[background-color,color,border-color,backdrop-filter] duration-500",
+          overDarkHero
+            ? "border-b border-transparent bg-transparent text-limestone"
+            : mobileOpen
+              ? "border-b border-transparent bg-frantoio text-limestone"
+              : "border-b border-border/70 bg-limestone/85 text-frantoio backdrop-blur-xl",
+        )}
+      >
+        <div className="site-container flex h-full items-center gap-6">
+          <Link href="/" className="relative mr-auto flex items-center" aria-label="Italian Pantry home">
             <Logo
-              variant="header"
+              variant={overDarkHero || mobileOpen ? "light" : "dark"}
               priority
-              className="h-8 w-auto sm:h-9 md:h-14"
+              className="h-9 w-auto md:h-11"
             />
           </Link>
 
-          <nav
-            aria-label="Main navigation"
-            className="hidden items-center gap-7 lg:flex"
-          >
-            {NAV_LINKS.map((link) => {
-              const isActive = isLinkActive(link.href, pathname);
-
+          <nav aria-label="Main navigation" className="hidden items-center gap-8 lg:flex">
+            {links.map((link) => {
+              const active = isLinkActive(link.href, pathname);
               return (
                 <Link
-                  key={link.href}
+                  key={`${link.label}-${link.href}`}
                   href={link.href}
-                  className={cn(
-                    "text-[0.6875rem] font-semibold tracking-[0.14em] uppercase transition-colors",
-                    isActive
-                      ? "text-primary underline decoration-2 underline-offset-[6px]"
-                      : "text-foreground hover:text-primary",
-                  )}
+                  target={link.newTab ? "_blank" : undefined}
+                  rel={link.newTab ? "noopener noreferrer" : undefined}
+                  aria-current={active ? "page" : undefined}
+                  className="group relative py-2 text-[0.9375rem] font-medium"
                 >
                   {link.label}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "absolute inset-x-0 -bottom-0.5 h-px origin-left bg-current transition-transform duration-500 ease-(--ease-pour)",
+                      active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
+                    )}
+                  />
                 </Link>
               );
             })}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2 lg:ml-3">
-            <Link
-              href="/contact"
-              className="hidden h-9 items-center rounded-lg bg-foreground px-4 text-[0.6875rem] font-semibold tracking-[0.14em] text-background uppercase transition-colors hover:bg-primary sm:flex"
-            >
-              Contact us
-            </Link>
-
+          <div className="flex items-center gap-2 lg:ml-4">
             <button
               type="button"
               onClick={openCart}
-              className="relative flex h-9 items-center gap-2 rounded-lg border border-foreground px-3 text-[0.6875rem] font-semibold tracking-[0.14em] uppercase transition-colors hover:bg-accent"
+              className={cn(
+                "flex h-10 items-center gap-2.5 rounded-full border pr-1.5 pl-4 text-[0.9375rem] font-medium transition-colors duration-300",
+                overDarkHero || mobileOpen
+                  ? "border-limestone/35 hover:bg-limestone hover:text-frantoio"
+                  : "border-frantoio/20 hover:bg-frantoio hover:text-limestone",
+              )}
             >
-              <ShoppingBag className="size-4" aria-hidden="true" />
-              <span className="tabular-nums">{totalQuantity}</span>
-              <span className="sr-only">
-                Open cart{totalQuantity > 0 ? `, ${totalQuantity} items` : ""}
+              Cart
+              <span className="flex size-7 items-center justify-center rounded-full bg-olio text-xs font-semibold text-frantoio tabular-nums">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={totalQuantity}
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -10, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {totalQuantity}
+                  </motion.span>
+                </AnimatePresence>
               </span>
+              <span className="sr-only">
+                , {totalQuantity} {totalQuantity === 1 ? "item" : "items"}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMobileOpen((open) => !open)}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-menu"
+              className="flex h-10 items-center rounded-full px-3 text-[0.9375rem] font-medium lg:hidden"
+            >
+              {mobileOpen ? "Close" : "Menu"}
             </button>
           </div>
         </div>
-      </div>
+      </motion.header>
 
-      {mobileOpen ? (
-        <nav
-          aria-label="Mobile navigation"
-          className="border-b border-foreground bg-background lg:hidden"
-        >
-          <ul className="site-container flex flex-col">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="block border-b border-border py-4 text-xs font-semibold tracking-[0.14em] uppercase transition-colors last:border-b-0 hover:text-primary"
+      <AnimatePresence>
+        {mobileOpen ? (
+          <motion.nav
+            id="mobile-menu"
+            aria-label="Mobile navigation"
+            initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
+            animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+            exit={{ clipPath: "inset(0% 0% 100% 0%)" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="on-dark fixed inset-x-0 top-(--nav-h) bottom-0 z-30 overflow-y-auto bg-frantoio text-limestone lg:hidden"
+            data-lenis-prevent
+          >
+            <ul className="site-container flex flex-col pt-6 pb-16">
+              {links.map((link, index) => (
+                <motion.li
+                  key={`${link.label}-${link.href}`}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.15 + index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                  className="border-b border-limestone/12"
                 >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      ) : null}
-    </header>
+                  <Link
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="block py-5 font-display text-4xl"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.nav>
+        ) : null}
+      </AnimatePresence>
+    </>
   );
 }

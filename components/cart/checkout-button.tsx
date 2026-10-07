@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { pillClasses } from "@/components/ui/pill";
 import { buildCheckoutUrl } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export function CheckoutButton({
   checkoutUrl,
   className,
-  label = "Proceed to checkout",
+  label = "Check out securely",
 }: {
   checkoutUrl: string;
   className?: string;
@@ -33,23 +33,13 @@ export function CheckoutButton({
   }
 
   return (
-    <Button
-      size="lg"
+    <button
+      type="button"
       onClick={handleCheckout}
       disabled={isRedirecting}
-      className={cn("group h-12 w-full rounded-lg text-sm", className)}
+      className={pillClasses("dark", cn("w-full", className))}
     >
-      {isRedirecting ? (
-        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-      ) : (
-        <>
-          {label}
-          <ArrowRight
-            className="size-4 transition-transform group-hover:translate-x-0.5"
-            aria-hidden="true"
-          />
-        </>
-      )}
-    </Button>
+      {isRedirecting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : label}
+    </button>
   );
 }

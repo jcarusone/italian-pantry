@@ -1,6 +1,8 @@
 import Link from "next/link";
 
+import { PageHeader } from "@/components/layout/page-header";
 import { ProductCard } from "@/components/product/product-card";
+import { getContent } from "@/lib/cms/content";
 import { getCollections, getProducts } from "@/lib/shopify";
 import type { Collection } from "@/lib/shopify/types";
 import { cn } from "@/lib/utils";
@@ -28,9 +30,7 @@ export function buildProductsHref(collection: string, sort: SortValue) {
 }
 
 export function parseSortValue(sort: string | undefined): SortValue {
-  return Object.keys(SORT_MAP).includes(sort ?? "")
-    ? (sort as SortValue)
-    : "featured";
+  return Object.keys(SORT_MAP).includes(sort ?? "") ? (sort as SortValue) : "featured";
 }
 
 type ProductsListingProps = {
@@ -45,8 +45,10 @@ export async function ProductsListing({
   collections: collectionsProp,
 }: ProductsListingProps) {
   const { sortKey, reverse } = SORT_MAP[activeSort];
-
-  const collections = collectionsProp ?? (await getCollections());
+  const [collections, shop] = await Promise.all([
+    collectionsProp ? Promise.resolve(collectionsProp) : getCollections(),
+    getContent("shop.page"),
+  ]);
 
   const products = await getProducts({
     collectionHandle: activeCollection === "all" ? undefined : activeCollection,
@@ -55,32 +57,21 @@ export async function ProductsListing({
     first: 60,
   });
 
-  const tabs = [{ handle: "all", title: "Everything" }, ...collections];
+  const tabs = [{ handle: "all", title: "Everything", description: "" }, ...collections];
   const activeTab = tabs.find((tab) => tab.handle === activeCollection);
+  const isAll = !activeTab || activeTab.handle === "all";
 
   return (
-    <div className="pb-20 sm:pb-28">
-      <header className="border-b border-border bg-card">
-        <div className="site-container py-14 sm:py-20">
-          <p className="eyebrow text-muted-foreground">The Cellar</p>
-          <h1 className="mt-4 font-display text-4xl leading-[0.95] uppercase text-balance sm:text-5xl md:text-6xl">
-            {activeTab && activeTab.handle !== "all"
-              ? activeTab.title
-              : "Everything we import"}
-          </h1>
-          <p className="mt-5 max-w-xl leading-relaxed text-muted-foreground text-pretty">
-            Every bottle carries a harvest date, a named cultivar, and a single
-            country of origin. We buy from eleven families and nobody else.
-          </p>
-        </div>
-      </header>
+    <div className="pb-24 md:pb-36">
+      <PageHeader
+        key={activeCollection}
+        lines={isAll ? [shop.heading] : [activeTab.title]}
+        intro={isAll || !activeTab.description ? shop.intro : activeTab.description}
+      />
 
       <div className="site-container">
-        <div className="flex flex-col gap-5 border-b border-border py-6 md:flex-row md:items-center md:justify-between">
-          <nav
-            aria-label="Filter by category"
-            className="flex flex-wrap items-center gap-2"
-          >
+        <div className="flex flex-col gap-5 border-y border-frantoio/15 py-5 lg:flex-row lg:items-center lg:justify-between">
+          <nav aria-label="Filter by category" className="flex flex-wrap items-center gap-2">
             {tabs.map((tab) => {
               const isActive = tab.handle === activeCollection;
               return (
@@ -89,10 +80,10 @@ export async function ProductsListing({
                   href={buildProductsHref(tab.handle, activeSort)}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "rounded-lg border px-4 py-2 eyebrow transition-colors",
+                    "flex h-11 items-center rounded-full border px-5 text-[0.9375rem] font-medium transition-colors duration-300",
                     isActive
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground",
+                      ? "border-frantoio bg-frantoio text-limestone"
+                      : "border-frantoio/15 text-frantoio/75 hover:border-frantoio/50 hover:text-frantoio",
                   )}
                 >
                   {tab.title}
@@ -101,8 +92,8 @@ export async function ProductsListing({
             })}
           </nav>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="eyebrow text-muted-foreground">Sort</span>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.9375rem]">
+            <span className="text-muted-foreground">Sort by</span>
             {SORT_OPTIONS.map((option) => {
               const isActive = option.value === activeSort;
               return (
@@ -111,9 +102,9 @@ export async function ProductsListing({
                   href={buildProductsHref(activeCollection, option.value)}
                   aria-current={isActive ? "true" : undefined}
                   className={cn(
-                    "text-sm transition-colors",
+                    "transition-colors",
                     isActive
-                      ? "text-foreground underline decoration-primary decoration-2 underline-offset-4"
+                      ? "font-semibold text-foreground underline decoration-gold decoration-2 underline-offset-[6px]"
                       : "text-muted-foreground hover:text-foreground",
                   )}
                 >
@@ -125,19 +116,27 @@ export async function ProductsListing({
         </div>
 
         {products.length === 0 ? (
-          <p className="py-24 text-center text-muted-foreground">
-            Nothing in this category yet. Please check back soon.
-          </p>
+          <div className="flex flex-col items-start gap-4 py-24">
+            <p className="font-display text-3xl">Nothing on this shelf yet.</p>
+            <p className="text-muted-foreground">
+              New products arrive from Italy regularly.{" "}
+              <Link href="/products" className="font-semibold text-foreground underline underline-offset-4">
+                Browse everything
+              </Link>
+            </p>
+          </div>
         ) : (
           <>
-            <p className="pt-8 eyebrow text-muted-foreground">
+            <p className="pt-8 text-[0.9375rem] text-muted-foreground">
               {products.length} {products.length === 1 ? "product" : "products"}
             </p>
-            <div className="grid grid-cols-1 gap-5 gap-y-12 pt-8 min-[480px]:grid-cols-2 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4 xl:grid-cols-5">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-12 pt-8 md:grid-cols-3 md:gap-x-6 xl:grid-cols-4">
+              {products.map((product, index) => (
+                <li key={product.id}>
+                  <ProductCard product={product} priority={index < 4} />
+                </li>
               ))}
-            </div>
+            </ul>
           </>
         )}
       </div>

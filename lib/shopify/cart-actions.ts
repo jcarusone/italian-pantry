@@ -10,6 +10,7 @@ import {
   removeCartLines,
   updateCartLines,
 } from "@/lib/shopify"
+import { isDemoMode } from "@/lib/shopify/demo"
 import type { Cart } from "@/lib/shopify/types"
 
 const CART_COOKIE = "italian_pantry_cart_id"
@@ -32,20 +33,24 @@ async function writeCartId(cartId: string) {
 
 /** Reads the current cart. Safe to call from any server component. */
 export async function fetchCart(): Promise<Cart | null> {
+  if (isDemoMode()) return null
   const cartId = await readCartId()
   if (!cartId) return null
 
   try {
     return await getCart(cartId)
   } catch (error) {
-    console.log("[v0] Failed to load cart:", error instanceof Error ? error.message : error)
+    console.error("Failed to load cart:", error instanceof Error ? error.message : error)
     return null
   }
 }
 
 type ActionResult = { ok: true; cart: Cart } | { ok: false; error: string }
 
+const DEMO_MESSAGE = "Preview mode: connect the Shopify store to enable the cart."
+
 export async function addToCart(variantId: string, quantity = 1): Promise<ActionResult> {
+  if (isDemoMode()) return { ok: false, error: DEMO_MESSAGE }
   try {
     const cartId = await readCartId()
     let cart: Cart
@@ -67,7 +72,7 @@ export async function addToCart(variantId: string, quantity = 1): Promise<Action
     return { ok: true, cart }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not add this item."
-    console.log("[v0] addToCart failed:", message)
+    console.error("addToCart failed:", message)
     return { ok: false, error: message }
   }
 }
@@ -86,7 +91,7 @@ export async function updateCartLine(lineId: string, quantity: number): Promise<
     return { ok: true, cart }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not update your cart."
-    console.log("[v0] updateCartLine failed:", message)
+    console.error("updateCartLine failed:", message)
     return { ok: false, error: message }
   }
 }
@@ -101,7 +106,7 @@ export async function removeCartLine(lineId: string): Promise<ActionResult> {
     return { ok: true, cart }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not remove this item."
-    console.log("[v0] removeCartLine failed:", message)
+    console.error("removeCartLine failed:", message)
     return { ok: false, error: message }
   }
 }

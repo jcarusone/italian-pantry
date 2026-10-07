@@ -1,178 +1,171 @@
-import Image from "next/image";
 import Link from "next/link";
+import { Mail, MapPin, Phone } from "lucide-react";
 
 import { Logo } from "@/components/layout/logo";
+import type { FooterColumn } from "@/lib/cms/defaults-nav";
+import type { SectionContent } from "@/lib/cms/sections";
 import { getCollections } from "@/lib/shopify";
-import { cn } from "@/lib/utils";
+import { SITE } from "@/lib/site";
 
-const ABOUT_LINKS = [
-  { href: "/about", label: "Our story" },
-  { href: "/journal", label: "Stories" },
-  { href: "/contact?topic=shipping", label: "Shipping & returns" },
-  { href: "/contact?topic=wholesale", label: "Wholesale & trade" },
-];
+type FooterLink = { href: string; label: string; newTab?: boolean };
 
-const CONTACT_DETAILS = [
-  {
-    label: "Email",
-    value: "ciao@italianpantry.com",
-    href: "mailto:ciao@italianpantry.com",
-  },
-  {
-    label: "Telephone",
-    value: "+1 (416) 949 8641",
-    href: "tel:+14169498646",
-  },
-  {
-    label: "Warehouse",
-    value: "Toronto, ON - Canada",
-  },
-];
+const footerContactIconLink =
+  "flex size-[3.25rem] items-center justify-center rounded-full border border-limestone/25 text-limestone transition-colors hover:border-limestone/50 hover:bg-limestone/5";
 
-function FooterLinkList({
-  links,
-}: {
-  links: { href: string; label: string }[];
-}) {
+function Column({ heading, links }: { heading: string; links: FooterLink[] }) {
   return (
-    <ul className="flex flex-col gap-2.5">
-      {links.map((link) => (
-        <li key={link.href}>
-          <Link
-            href={link.href}
-            className="text-sm text-background/80 transition-colors hover:text-background"
-          >
-            {link.label}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function FooterLinkColumn({
-  heading,
-  links,
-}: {
-  heading: string;
-  links: { href: string; label: string }[];
-}) {
-  return (
-    <div className="flex flex-col gap-4">
-      <h2 className="eyebrow text-accent">{heading}</h2>
-      <FooterLinkList links={links} />
+    <div className="flex min-w-0 flex-col gap-4">
+      <h2 className="label text-olio">{heading}</h2>
+      <ul className="flex flex-col gap-2.5">
+        {links.map((link, index) => (
+          <li key={`${link.href}-${index}`}>
+            <Link
+              href={link.href}
+              target={link.newTab ? "_blank" : undefined}
+              rel={link.newTab ? "noopener noreferrer" : undefined}
+              className="text-[0.9375rem] text-limestone/70 transition-colors hover:text-limestone"
+            >
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
-export async function SiteFooter({ className }: { className?: string }) {
-  const collections = await getCollections();
+export async function SiteFooter({
+  columns,
+  site,
+}: {
+  columns: FooterColumn[];
+  site: SectionContent<"site">;
+}) {
+  const needsCollections = columns.some((column) => column.includeCollections);
+  let collections: Awaited<ReturnType<typeof getCollections>> = [];
+  if (needsCollections) {
+    try {
+      collections = await getCollections();
+    } catch (error) {
+      console.error("Footer collections unavailable:", error);
+    }
+  }
 
-  const productLinks = [
-    { href: "/products", label: "All products" },
-    ...collections.map((collection) => ({
-      href: `/products/${collection.handle}`,
-      label: collection.title,
-    })),
-    { href: "/cart", label: "Your cart" },
-  ];
+  const resolved = columns.map((column) => ({
+    title: column.title,
+    links: [
+      ...column.items,
+      ...(column.includeCollections
+        ? collections.map((c) => ({ href: `/products/${c.handle}`, label: c.title }))
+        : []),
+    ],
+  }));
 
-  const splitAt = Math.ceil(productLinks.length / 2);
-  const productLinksCol1 = productLinks.slice(0, splitAt);
-  const productLinksCol2 = productLinks.slice(splitAt);
+  const hasContact = site.contactEmail || site.contactPhone || site.contactLocation;
 
   return (
-    <footer
-      className={cn(
-        "relative isolate overflow-hidden border-t-2 border-foreground text-background",
-        className,
-      )}
-    >
-      <Image
+    <footer className="on-dark relative isolate flex min-h-dvh flex-col justify-end overflow-hidden bg-[#353421]/85">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src="/product-line/img-15.webp"
         alt=""
-        fill
-        sizes="100vw"
-        className="object-cover"
-        aria-hidden="true"
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 size-full object-cover mix-blend-multiply opacity-75"
       />
       <div
-        className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/70"
-        aria-hidden="true"
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(to_top,black_0%,transparent_60%)]"
       />
+      <div className="site-container relative z-10 pt-12 pb-10 md:pt-14 md:pb-12">
+        <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1.3fr_2fr] lg:gap-20">
+          <div className="flex max-w-md flex-col gap-6">
+            <Link href="/" className="w-fit" aria-label="Italian Pantry home">
+              <Logo variant="light" className="h-14 w-auto md:h-16" />
+            </Link>
+            {site.footerBlurb ? (
+              <p className="text-[0.9375rem] leading-relaxed text-limestone/65">{site.footerBlurb}</p>
+            ) : null}
+          </div>
 
-      <div className="relative flex min-h-dvh flex-col justify-end">
-        <div className="site-container pb-16 pt-8">
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-start">
-            <div className="flex max-w-sm shrink-0 flex-col gap-5">
-              <Link href="/" className="inline-flex w-fit">
-                <Logo
-                  variant="footer"
-                  className="h-9 w-auto sm:h-14"
-                  opacity={75}
-                />
-              </Link>
-              <p className="text-sm leading-relaxed text-background/70">
-                Authentic Italian food from small-batch artisan producers and
-                family farms in Italy&apos;s Abruzzo region. Imported directly
-                to your door — honest, simple, exceptional.
-              </p>
-              <p className="eyebrow text-background/50">
-                Est. 2025 · Toronto, Canada
-              </p>
-            </div>
-
-            <div
-              className="hidden min-w-0 flex-1 lg:block"
-              aria-hidden="true"
-            />
-
-            <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:flex lg:shrink-0 lg:gap-x-20 xl:gap-x-24">
-              <div className="flex flex-col gap-4">
-                <h2 className="eyebrow text-accent">Products</h2>
-                <div className="grid grid-cols-2 gap-x-12">
-                  <FooterLinkList links={productLinksCol1} />
-                  <FooterLinkList links={productLinksCol2} />
-                </div>
-              </div>
-
-              <FooterLinkColumn heading="About" links={ABOUT_LINKS} />
-
-              <div className="col-span-2 flex flex-col gap-4 sm:col-span-1">
-                <h2 className="eyebrow text-accent">Contact</h2>
-                <ul className="flex flex-col gap-3">
-                  {CONTACT_DETAILS.map((detail) => (
-                    <li key={detail.label} className="flex flex-col gap-0.5">
-                      <span className="text-xs text-background/50">
-                        {detail.label}
-                      </span>
-                      {detail.href ? (
-                        <a
-                          href={detail.href}
-                          className="text-sm text-background/80 transition-colors hover:text-background"
-                        >
-                          {detail.value}
-                        </a>
-                      ) : (
-                        <span className="text-sm leading-relaxed text-background/80">
-                          {detail.value}
-                        </span>
-                      )}
+          <div className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-[repeat(auto-fit,minmax(9rem,1fr))]">
+            {resolved.map((column, index) => (
+              <Column key={`${column.title}-${index}`} heading={column.title} links={column.links} />
+            ))}
+            {hasContact ? (
+              <div className="@container flex min-w-0 flex-col gap-4">
+                <h2 className="label text-olio">Get in touch</h2>
+                <ul
+                  className="grid grid-cols-2 justify-items-start gap-x-2 gap-y-2.5 @min-[11rem]:grid-cols-3 sm:hidden"
+                >
+                  {site.contactEmail ? (
+                    <li>
+                      <a
+                        href={`mailto:${site.contactEmail}`}
+                        aria-label={`Email ${site.contactEmail}`}
+                        className={footerContactIconLink}
+                      >
+                        <Mail className="size-6 shrink-0" strokeWidth={1.5} aria-hidden />
+                      </a>
                     </li>
-                  ))}
+                  ) : null}
+                  {site.contactPhone ? (
+                    <li>
+                      <a
+                        href={`tel:${site.contactPhone.replace(/[^\d+]/g, "")}`}
+                        aria-label={`Call ${site.contactPhone}`}
+                        className={footerContactIconLink}
+                      >
+                        <Phone className="size-6 shrink-0" strokeWidth={1.5} aria-hidden />
+                      </a>
+                    </li>
+                  ) : null}
+                  {site.contactLocation ? (
+                    <li>
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.contactLocation)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Location: ${site.contactLocation}`}
+                        className={footerContactIconLink}
+                      >
+                        <MapPin className="size-6 shrink-0" strokeWidth={1.5} aria-hidden />
+                      </a>
+                    </li>
+                  ) : null}
+                </ul>
+                <ul className="hidden min-w-0 flex-col gap-2.5 text-[0.9375rem] text-limestone/70 sm:flex">
+                  {site.contactEmail ? (
+                    <li className="min-w-0">
+                      <a
+                        href={`mailto:${site.contactEmail}`}
+                        className="break-all transition-colors hover:text-limestone"
+                      >
+                        {site.contactEmail}
+                      </a>
+                    </li>
+                  ) : null}
+                  {site.contactPhone ? (
+                    <li>
+                      <a
+                        href={`tel:${site.contactPhone.replace(/[^\d+]/g, "")}`}
+                        className="transition-colors hover:text-limestone"
+                      >
+                        {site.contactPhone}
+                      </a>
+                    </li>
+                  ) : null}
+                  {site.contactLocation ? <li>{site.contactLocation}</li> : null}
                 </ul>
               </div>
-            </div>
+            ) : null}
           </div>
+        </div>
 
-          <div className="mt-14 flex flex-col gap-4 border-t border-background/15 pt-8 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-background/50">
-              © {new Date().getFullYear()} Italian Pantry. All rights reserved.
-            </p>
-            <p className="text-xs text-background/50">
-              Secure checkout powered by Shopify
-            </p>
-          </div>
+        <div className="mt-14 flex flex-col gap-3 border-t border-limestone/12 pt-8 text-[0.8125rem] text-limestone/50 sm:flex-row sm:items-center sm:justify-between md:mt-16 font-bold">
+          <p>
+            © {new Date().getFullYear()} Italian Pantry - All Rights Reserved.
+          </p>
+          <p>Secure checkout by Shopify</p>
         </div>
       </div>
     </footer>

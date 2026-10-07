@@ -1,5 +1,12 @@
 import { shopifyFetch } from "./client"
 import { ARTICLE_FRAGMENT, CART_FRAGMENT, PRODUCT_FRAGMENT } from "./fragments"
+import {
+  DEMO_COLLECTIONS,
+  DEMO_PRODUCTS,
+  demoCollectionProducts,
+  demoSort,
+  isDemoMode,
+} from "./demo"
 import type { Article, Cart, Collection, Product } from "./types"
 
 export const BLOG_HANDLE = "journal"
@@ -47,6 +54,10 @@ export async function getProducts(options?: {
   query?: string
   collectionHandle?: string
 }): Promise<Product[]> {
+  if (isDemoMode() && !options?.collectionHandle) {
+    return demoSort(DEMO_PRODUCTS, options?.sortKey, options?.reverse).slice(0, options?.first ?? 30)
+  }
+
   // Collection-scoped listings use a different query and sort enum.
   if (options?.collectionHandle) {
     const { products } = await getCollectionProducts(options.collectionHandle, {
@@ -82,6 +93,8 @@ export async function getProducts(options?: {
 }
 
 export async function getProduct(handle: string): Promise<Product | null> {
+  if (isDemoMode()) return DEMO_PRODUCTS.find((p) => p.handle === handle) ?? null
+
   const data = await shopifyFetch<{ product: RawProduct | null }>({
     query: /* GraphQL */ `
       query Product($handle: String!) {
@@ -99,6 +112,8 @@ export async function getProduct(handle: string): Promise<Product | null> {
 }
 
 export async function getProductRecommendations(productId: string): Promise<Product[]> {
+  if (isDemoMode()) return DEMO_PRODUCTS.filter((p) => p.id !== productId).slice(0, 4)
+
   const data = await shopifyFetch<{ productRecommendations: RawProduct[] | null }>({
     query: /* GraphQL */ `
       query Recommendations($productId: ID!) {
@@ -120,6 +135,8 @@ export async function getProductRecommendations(productId: string): Promise<Prod
 /* -------------------------------------------------------------------------- */
 
 export async function getCollections(): Promise<Collection[]> {
+  if (isDemoMode()) return DEMO_COLLECTIONS
+
   const data = await shopifyFetch<{ collections: { nodes: Collection[] } }>({
     query: /* GraphQL */ `
       query Collections {
@@ -152,6 +169,11 @@ export async function getCollectionProducts(
   collection: Collection | null
   products: Product[]
 }> {
+  if (isDemoMode()) {
+    const result = demoCollectionProducts(handle)
+    return { ...result, products: demoSort(result.products, options?.sortKey, options?.reverse) }
+  }
+
   const data = await shopifyFetch<{
     collection:
       | (Collection & {
@@ -210,6 +232,8 @@ export async function getCollectionProducts(
 /* -------------------------------------------------------------------------- */
 
 export async function getArticles(first = 12): Promise<Article[]> {
+  if (isDemoMode()) return []
+
   const data = await shopifyFetch<{
     blog: { articles: { nodes: RawArticle[] } } | null
   }>({
@@ -233,6 +257,8 @@ export async function getArticles(first = 12): Promise<Article[]> {
 }
 
 export async function getArticle(handle: string): Promise<Article | null> {
+  if (isDemoMode()) return null
+
   const data = await shopifyFetch<{
     blog: { articleByHandle: RawArticle | null } | null
   }>({

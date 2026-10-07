@@ -1,12 +1,13 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Check, Loader2 } from "lucide-react";
 
-import { submitContactForm, type ContactState } from "@/app/contact/actions";
-import { Button } from "@/components/ui/button";
+import { ContactTurnstile } from "@/components/contact/contact-turnstile";
+import { submitContactForm, type ContactState } from "@/lib/contact-actions";
+import { pillClasses } from "@/components/ui/pill";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,29 +17,32 @@ const INITIAL_STATE: ContactState = { status: "idle", message: "" };
 
 const TOPICS = [
   "General enquiry",
-  "Wholesale and restaurants",
   "Order or delivery",
-  "Press",
+  "Products and ingredients",
+  "Wholesale enquiry",
 ] as const;
 
 /** Lets other pages deep-link a preselected subject, e.g. /contact?topic=wholesale */
 const TOPIC_SLUGS: Record<string, (typeof TOPICS)[number]> = {
   general: "General enquiry",
-  wholesale: "Wholesale and restaurants",
+  wholesale: "Wholesale enquiry",
   shipping: "Order or delivery",
   order: "Order or delivery",
-  press: "Press",
+  products: "Products and ingredients",
 };
 
-function SubmitButton() {
+type ContactFormProps = {
+  turnstileSiteKey?: string;
+};
+
+function SubmitButton({ disabled }: { disabled?: boolean }) {
   const { pending } = useFormStatus();
 
   return (
-    <Button
+    <button
       type="submit"
-      size="lg"
-      disabled={pending}
-      className="h-12 px-8 text-[0.6875rem] font-bold tracking-[0.14em] uppercase"
+      disabled={pending || disabled}
+      className={pillClasses("dark", "px-9")}
     >
       {pending ? (
         <>
@@ -48,26 +52,36 @@ function SubmitButton() {
       ) : (
         "Send message"
       )}
-    </Button>
+    </button>
   );
 }
 
-export function ContactForm() {
+export function ContactForm({ turnstileSiteKey }: ContactFormProps) {
   const [state, formAction] = useActionState(submitContactForm, INITIAL_STATE);
   const topicParam = useSearchParams().get("topic")?.toLowerCase() ?? "";
   const presetTopic = TOPIC_SLUGS[topicParam] ?? TOPICS[0];
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
+  const turnstileEnabled = Boolean(turnstileSiteKey);
+
+  useEffect(() => {
+    if (state.resetTurnstile) {
+      setTurnstileToken(null);
+      setTurnstileKey((key) => key + 1);
+    }
+  }, [state.resetTurnstile, state.status, state.message]);
 
   if (state.status === "success") {
     return (
       <div
         role="status"
-        className="flex flex-col items-start rounded-lg border-2 border-foreground bg-card p-8"
+        className="flex flex-col items-start rounded-2xl bg-card p-8 md:p-10"
       >
-        <span className="flex size-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+        <span className="flex size-10 items-center justify-center rounded-full bg-olio text-frantoio">
           <Check className="size-4" aria-hidden="true" />
         </span>
-        <h2 className="mt-5 font-display text-2xl uppercase">
-          Message received
+        <h2 className="mt-6 font-display text-[2rem] leading-tight">
+          Message sent
         </h2>
         <p className="mt-3 leading-relaxed text-muted-foreground text-pretty">
           {state.message}
@@ -75,6 +89,8 @@ export function ContactForm() {
       </div>
     );
   }
+
+  const submitBlocked = turnstileEnabled && !turnstileToken;
 
   return (
     <form action={formAction} className="flex flex-col gap-6" noValidate>
@@ -90,7 +106,7 @@ export function ContactForm() {
               state.fieldErrors?.name ? "name-error" : undefined
             }
             className={cn(
-              "h-11",
+              "h-12 rounded-lg bg-card px-4 text-[1rem]",
               state.fieldErrors?.name && "border-destructive",
             )}
           />
@@ -113,7 +129,7 @@ export function ContactForm() {
               state.fieldErrors?.email ? "email-error" : undefined
             }
             className={cn(
-              "h-11",
+              "h-12 rounded-lg bg-card px-4 text-[1rem]",
               state.fieldErrors?.email && "border-destructive",
             )}
           />
@@ -131,7 +147,7 @@ export function ContactForm() {
           id="topic"
           name="topic"
           defaultValue={presetTopic}
-          className="h-11 rounded-lg border-2 border-foreground bg-transparent px-3 text-sm outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/40"
+          className="h-12 rounded-lg border border-input bg-card px-4 text-[1rem] outline-none focus-visible:border-leaf focus-visible:ring-[3px] focus-visible:ring-ring/30"
         >
           {TOPICS.map((topic) => (
             <option key={topic} value={topic}>
@@ -152,7 +168,7 @@ export function ContactForm() {
             state.fieldErrors?.message ? "message-error" : undefined
           }
           className={cn(
-            "resize-none",
+            "resize-none rounded-lg bg-card px-4 py-3 text-[1rem]",
             state.fieldErrors?.message && "border-destructive",
           )}
         />
@@ -163,6 +179,21 @@ export function ContactForm() {
         ) : null}
       </div>
 
+      {turnstileEnabled ? (
+        <div className="flex flex-col gap-2">
+          <input
+            type="hidden"
+            name="cf-turnstile-response"
+            value={turnstileToken ?? ""}
+          />
+          <ContactTurnstile
+            key={turnstileKey}
+            siteKey={turnstileSiteKey!}
+            onTokenChange={setTurnstileToken}
+          />
+        </div>
+      ) : null}
+
       {state.status === "error" && !state.fieldErrors ? (
         <p role="alert" className="text-sm text-destructive">
           {state.message}
@@ -170,7 +201,7 @@ export function ContactForm() {
       ) : null}
 
       <div>
-        <SubmitButton />
+        <SubmitButton disabled={submitBlocked} />
       </div>
     </form>
   );

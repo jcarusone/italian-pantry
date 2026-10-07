@@ -3,15 +3,15 @@ import type { Money } from "@/lib/shopify/types"
 export function formatPrice(money: Money | null | undefined) {
   if (!money) return ""
 
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-CA", {
     style: "currency",
-    currency: money.currencyCode || "USD",
+    currency: money.currencyCode || "CAD",
     minimumFractionDigits: 2,
   }).format(Number.parseFloat(money.amount))
 }
 
 export function formatDate(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat("en-CA", {
     month: "long",
     day: "numeric",
     year: "numeric",

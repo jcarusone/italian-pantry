@@ -14,6 +14,7 @@ type CartContextValue = {
   closeCart: () => void
   setOpen: (open: boolean) => void
   refresh: () => Promise<unknown>
+  freeShippingThreshold: number
 }
 
 const CartContext = createContext<CartContextValue | null>(null)
@@ -27,9 +28,11 @@ const fetcher = async (url: string): Promise<{ cart: Cart | null }> => {
 export function CartProvider({
   children,
   initialCart,
+  freeShippingThreshold = 75,
 }: {
   children: React.ReactNode
   initialCart: Cart | null
+  freeShippingThreshold?: number
 }) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -54,8 +57,9 @@ export function CartProvider({
       closeCart,
       setOpen: setIsOpen,
       refresh,
+      freeShippingThreshold,
     }),
-    [cart, isLoading, isOpen, openCart, closeCart, refresh],
+    [cart, isLoading, isOpen, openCart, closeCart, refresh, freeShippingThreshold],
   )
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

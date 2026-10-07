@@ -2,34 +2,31 @@ import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
-const LOGO_WIDTH = 1282;
-const LOGO_HEIGHT = 422;
-
-const LOGO_SRC = {
-  header: "/italian-pantry-logo.webp",
-  footer: "/italian-pantry-logo-white-with-flag.webp",
+const LOGOS = {
+  /** Black and gold, for light grounds. */
+  dark: { src: "/italian-pantry-logo.webp", width: 1290, height: 410 },
+  /** White with the tricolore rule, for dark grounds. */
+  light: { src: "/italian-pantry-logo-white-with-flag.webp", width: 1282, height: 422 },
 } as const;
 
 export function Logo({
   className,
-  variant = "header",
+  variant = "dark",
   priority = false,
-  opacity = 100,
 }: {
   className?: string;
-  variant?: keyof typeof LOGO_SRC;
+  variant?: keyof typeof LOGOS;
   priority?: boolean;
-  opacity?: number;
 }) {
+  const logo = LOGOS[variant];
   return (
     <Image
-      src={LOGO_SRC[variant]}
+      src={logo.src}
       alt="Italian Pantry"
-      width={LOGO_WIDTH}
-      height={LOGO_HEIGHT}
+      width={logo.width}
+      height={logo.height}
       priority={priority}
-      className={cn("h-9 w-auto shrink-0 sm:h-10", className)}
-      style={{ opacity: opacity / 100 }}
+      className={cn("h-10 w-auto shrink-0", className)}
     />
   );
 }

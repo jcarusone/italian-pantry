@@ -56,7 +56,7 @@ export function CartLineItem({
     });
   }
 
-  const imageSize = size === "compact" ? "size-20" : "size-24 sm:size-28";
+  const imageSize = size === "compact" ? "h-24 w-20" : "h-32 w-26 sm:h-36 sm:w-28";
 
   return (
     <li
@@ -69,7 +69,7 @@ export function CartLineItem({
         href={`/products/${line.merchandise.product.handle}`}
         onClick={onNavigate}
         className={cn(
-          "relative shrink-0 overflow-hidden rounded-lg bg-secondary",
+          "relative shrink-0 overflow-hidden rounded-md bg-secondary",
           imageSize,
         )}
       >
@@ -79,7 +79,7 @@ export function CartLineItem({
             alt={image.altText ?? line.merchandise.product.title}
             fill
             sizes="120px"
-            className="object-contain p-1.5"
+            className="object-cover"
           />
         ) : null}
       </Link>
@@ -90,12 +90,12 @@ export function CartLineItem({
             <Link
               href={`/products/${line.merchandise.product.handle}`}
               onClick={onNavigate}
-              className="block text-sm leading-snug font-medium text-pretty hover:text-primary"
+              className="block font-display text-[1.25rem] leading-tight text-pretty hover:text-leaf"
             >
               {line.merchandise.product.title}
             </Link>
             {variantLabel ? (
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-[0.875rem] text-muted-foreground">
                 {variantLabel}
               </p>
             ) : null}
@@ -104,7 +104,7 @@ export function CartLineItem({
           <button
             type="button"
             onClick={remove}
-            className="-mr-1 -mt-1 shrink-0 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            className="-mr-1.5 -mt-1 shrink-0 rounded-full p-2 text-muted-foreground transition-colors hover:bg-frantoio/8 hover:text-foreground"
           >
             <X className="size-3.5" aria-hidden="true" />
             <span className="sr-only">
@@ -114,11 +114,11 @@ export function CartLineItem({
         </div>
 
         <div className="mt-auto flex items-center justify-between gap-3">
-          <div className="flex items-center rounded-lg border border-border">
+          <div className="flex items-center rounded-full border border-frantoio/20">
             <button
               type="button"
               onClick={() => changeQuantity(quantity - 1)}
-              className="flex size-8 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+              className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
             >
               <Minus className="size-3" aria-hidden="true" />
               <span className="sr-only">Decrease quantity</span>
@@ -139,14 +139,14 @@ export function CartLineItem({
             <button
               type="button"
               onClick={() => changeQuantity(quantity + 1)}
-              className="flex size-8 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+              className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
             >
               <Plus className="size-3" aria-hidden="true" />
               <span className="sr-only">Increase quantity</span>
             </button>
           </div>
 
-          <span className="text-sm tabular-nums">
+          <span className="font-semibold tabular-nums">
             {formatPrice(line.cost.totalAmount)}
           </span>
         </div>

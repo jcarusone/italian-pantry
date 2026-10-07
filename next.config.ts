@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   async redirects() {
     return [
+      { source: "/journal", destination: "/stories", permanent: true },
+      { source: "/journal/:slug", destination: "/stories/:slug", permanent: true },
       {
         source: "/shop",
         destination: "/products",
@@ -31,6 +33,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "cdn.shopify.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
       },
     ],
   },
