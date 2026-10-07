@@ -126,6 +126,10 @@ export const CART_FRAGMENT = /* GraphQL */ `
               amount
               currencyCode
             }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
             product {
               handle
               title

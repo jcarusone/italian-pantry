@@ -15,7 +15,7 @@ const footerContactIconLink =
 function Column({ heading, links }: { heading: string; links: FooterLink[] }) {
   return (
     <div className="flex min-w-0 flex-col gap-4">
-      <h2 className="label text-olio">{heading}</h2>
+      <h2 className="label text-olio font-bold">{heading}</h2>
       <ul className="flex flex-col gap-2.5">
         {links.map((link, index) => (
           <li key={`${link.href}-${index}`}>
@@ -23,7 +23,7 @@ function Column({ heading, links }: { heading: string; links: FooterLink[] }) {
               href={link.href}
               target={link.newTab ? "_blank" : undefined}
               rel={link.newTab ? "noopener noreferrer" : undefined}
-              className="text-[0.9375rem] text-limestone/70 transition-colors hover:text-limestone"
+              className="text-[0.9175rem] text-limestone/70 transition-colors hover:text-limestone"
             >
               {link.label}
             </Link>
@@ -56,12 +56,16 @@ export async function SiteFooter({
     links: [
       ...column.items,
       ...(column.includeCollections
-        ? collections.map((c) => ({ href: `/products/${c.handle}`, label: c.title }))
+        ? collections.map((c) => ({
+            href: `/products/${c.handle}`,
+            label: c.title,
+          }))
         : []),
     ],
   }));
 
-  const hasContact = site.contactEmail || site.contactPhone || site.contactLocation;
+  const hasContact =
+    site.contactEmail || site.contactPhone || site.contactLocation;
 
   return (
     <footer className="on-dark relative isolate flex min-h-dvh flex-col justify-end overflow-hidden bg-[#353421]/85">
@@ -77,26 +81,30 @@ export async function SiteFooter({
         className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(to_top,black_0%,transparent_60%)]"
       />
       <div className="site-container relative z-10 pt-12 pb-10 md:pt-14 md:pb-12">
-        <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1.3fr_2fr] lg:gap-20">
+        <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1.15fr_2fr] lg:gap-20">
           <div className="flex max-w-md flex-col gap-6">
             <Link href="/" className="w-fit" aria-label="Italian Pantry home">
               <Logo variant="light" className="h-14 w-auto md:h-16" />
             </Link>
             {site.footerBlurb ? (
-              <p className="text-[0.9375rem] leading-relaxed text-limestone/65">{site.footerBlurb}</p>
+              <p className="text-[0.9375rem] leading-relaxed text-limestone/65">
+                {site.footerBlurb}
+              </p>
             ) : null}
           </div>
 
-          <div className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-[repeat(auto-fit,minmax(9rem,1fr))]">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-[repeat(auto-fit,minmax(9rem,1fr))]">
             {resolved.map((column, index) => (
-              <Column key={`${column.title}-${index}`} heading={column.title} links={column.links} />
+              <Column
+                key={`${column.title}-${index}`}
+                heading={column.title}
+                links={column.links}
+              />
             ))}
             {hasContact ? (
               <div className="@container flex min-w-0 flex-col gap-4">
-                <h2 className="label text-olio">Get in touch</h2>
-                <ul
-                  className="grid grid-cols-2 justify-items-start gap-x-2 gap-y-2.5 @min-[11rem]:grid-cols-3 sm:hidden"
-                >
+                <h2 className="label text-olio font-bold">Get in touch</h2>
+                <ul className="grid grid-cols-2 justify-items-start gap-x-2 gap-y-2.5 @min-[11rem]:grid-cols-3 sm:hidden ">
                   {site.contactEmail ? (
                     <li>
                       <a
@@ -104,7 +112,11 @@ export async function SiteFooter({
                         aria-label={`Email ${site.contactEmail}`}
                         className={footerContactIconLink}
                       >
-                        <Mail className="size-6 shrink-0" strokeWidth={1.5} aria-hidden />
+                        <Mail
+                          className="size-6 shrink-0"
+                          strokeWidth={1.5}
+                          aria-hidden
+                        />
                       </a>
                     </li>
                   ) : null}
@@ -115,7 +127,11 @@ export async function SiteFooter({
                         aria-label={`Call ${site.contactPhone}`}
                         className={footerContactIconLink}
                       >
-                        <Phone className="size-6 shrink-0" strokeWidth={1.5} aria-hidden />
+                        <Phone
+                          className="size-6 shrink-0"
+                          strokeWidth={1.5}
+                          aria-hidden
+                        />
                       </a>
                     </li>
                   ) : null}
@@ -128,12 +144,16 @@ export async function SiteFooter({
                         aria-label={`Location: ${site.contactLocation}`}
                         className={footerContactIconLink}
                       >
-                        <MapPin className="size-6 shrink-0" strokeWidth={1.5} aria-hidden />
+                        <MapPin
+                          className="size-6 shrink-0"
+                          strokeWidth={1.5}
+                          aria-hidden
+                        />
                       </a>
                     </li>
                   ) : null}
                 </ul>
-                <ul className="hidden min-w-0 flex-col gap-2.5 text-[0.9375rem] text-limestone/70 sm:flex">
+                <ul className="hidden min-w-0 flex-col gap-2.5 text-[0.9175rem] text-limestone/70 sm:flex">
                   {site.contactEmail ? (
                     <li className="min-w-0">
                       <a
@@ -154,7 +174,9 @@ export async function SiteFooter({
                       </a>
                     </li>
                   ) : null}
-                  {site.contactLocation ? <li>{site.contactLocation}</li> : null}
+                  {site.contactLocation ? (
+                    <li>{site.contactLocation}</li>
+                  ) : null}
                 </ul>
               </div>
             ) : null}

@@ -92,6 +92,7 @@ export type CartLine = {
     selectedOptions: SelectedOption[]
     image: ShopifyImage | null
     price: Money
+    compareAtPrice: Money | null
     product: {
       handle: string
       title: string

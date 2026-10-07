@@ -34,6 +34,12 @@ export function CartLineItem({
   const image =
     line.merchandise.image ?? line.merchandise.product.featuredImage;
 
+  const unitPrice = line.merchandise.price;
+  const compareAt = line.merchandise.compareAtPrice;
+  const onSale =
+    compareAt &&
+    Number.parseFloat(compareAt.amount) > Number.parseFloat(unitPrice.amount);
+
   function changeQuantity(next: number) {
     setOptimisticQty(next);
     startTransition(async () => {
@@ -56,7 +62,8 @@ export function CartLineItem({
     });
   }
 
-  const imageSize = size === "compact" ? "h-24 w-20" : "h-32 w-26 sm:h-36 sm:w-28";
+  const imageSize =
+    size === "compact" ? "h-24 w-20" : "h-32 w-26 sm:h-36 sm:w-28";
 
   return (
     <li
@@ -79,7 +86,7 @@ export function CartLineItem({
             alt={image.altText ?? line.merchandise.product.title}
             fill
             sizes="120px"
-            className="object-cover"
+            className="object-contain p-2"
           />
         ) : null}
       </Link>
@@ -94,8 +101,24 @@ export function CartLineItem({
             >
               {line.merchandise.product.title}
             </Link>
+            <p className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-[0.775rem] tabular-nums">
+              <span
+                className={
+                  onSale
+                    ? "font-medium text-foreground"
+                    : "text-muted-foreground"
+                }
+              >
+                {formatPrice(unitPrice)} each
+              </span>
+              {onSale && compareAt ? (
+                <span className="text-[0.75rem] text-muted-foreground line-through">
+                  {formatPrice(compareAt)}
+                </span>
+              ) : null}
+            </p>
             {variantLabel ? (
-              <p className="mt-1 text-[0.875rem] text-muted-foreground">
+              <p className="mt-0.5 text-[0.875rem] text-muted-foreground">
                 {variantLabel}
               </p>
             ) : null}
