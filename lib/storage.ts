@@ -6,11 +6,14 @@ import { randomUUID } from "node:crypto";
 import { del, put } from "@vercel/blob";
 
 /**
- * Image storage. Uses Vercel Blob when BLOB_READ_WRITE_TOKEN is set (production).
- * Without it, files are kept in a local `.uploads` folder for development only.
+ * Image storage via Vercel Blob when credentials are present:
+ * - BLOB_READ_WRITE_TOKEN (static token), or
+ * - BLOB_STORE_ID on Vercel (OIDC + VERCEL_OIDC_TOKEN at runtime).
+ * Otherwise files are kept in a local `.uploads` folder for development only.
  */
 export function usesVercelBlob() {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  if (process.env.BLOB_READ_WRITE_TOKEN) return true;
+  return Boolean(process.env.BLOB_STORE_ID && process.env.VERCEL);
 }
 
 const LOCAL_DIR = path.join(process.cwd(), ".uploads");

@@ -39,7 +39,7 @@ export default async function Dashboard() {
 
       {!usesVercelBlob() ? (
         <p className="mb-8 rounded-xl bg-olio/20 px-4 py-3 text-[0.875rem] text-[#6d5413]">
-          Images are being saved locally. Connect a Vercel Blob store (BLOB_READ_WRITE_TOKEN) before going live.
+          Images are being saved locally. Connect a Vercel Blob store to this project before going live.
         </p>
       ) : null}
 
